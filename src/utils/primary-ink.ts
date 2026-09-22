@@ -1,8 +1,10 @@
-/** Подбор читаемого текста на primary клиента. Цвет фона не подменяем. */
+/** Подбор текста на primary клиента. Цвет фона не подменяем. */
 
 export const PRIMARY_INK_WHITE = '#ffffff'
 export const PRIMARY_INK_BLACK = '#000000'
 export const MIN_BODY_CONTRAST = 4.5
+/** Светлее этого порога заливка пастельная: белый на ней почти не виден. */
+export const LIGHT_PRIMARY_LUMINANCE = 0.45
 
 function parseHex(hex: string): [number, number, number] {
   const value = hex.trim()
@@ -34,8 +36,11 @@ export function contrastRatio(foreground: string, background: string): number {
 export function primaryForeground(hex: string): { ink: string; contrast: number; white: number; black: number } {
   const white = contrastRatio(PRIMARY_INK_WHITE, hex)
   const black = contrastRatio(PRIMARY_INK_BLACK, hex)
-  if (black >= white) return { ink: PRIMARY_INK_BLACK, contrast: black, white, black }
-  return { ink: PRIMARY_INK_WHITE, contrast: white, white, black }
+  // На цветном бренде белый. Чёрный только на светлой заливке (жёлтый, мята, пастель):
+  // там белый почти не виден. Не выбираем чёрный только потому, что его WCAG-число выше —
+  // на среднем зелёном/оранжевом он читается, но выглядит грязно.
+  const ink = relativeLuminance(hex) >= LIGHT_PRIMARY_LUMINANCE ? PRIMARY_INK_BLACK : PRIMARY_INK_WHITE
+  return { ink, contrast: ink === PRIMARY_INK_WHITE ? white : black, white, black }
 }
 
 export function applyClientPrimary(hex: string, el: HTMLElement = document.documentElement): void {

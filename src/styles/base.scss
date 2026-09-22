@@ -133,16 +133,23 @@
 
   .cubo-tabs__tab[aria-selected='true'] {
     background-color: var(--cubo-tabs-active-surface);
+    border-radius: var(--gtc-global-radius-8);
   }
 }
 
-// Сегментные табы (data-format=segmented): внешний трек — тем же радиусом,
-// что и соседние селекты/поля (input-radius = r8 в этом прототипе). Кит даёт
-// треку plate + inset (8 + 4 = 12) — трек выглядел круглее контроллов справа
-// (Обзор и Аналитика). Плашка активного сегмента остаётся r8.
+// Сегментные табы (data-format=segmented): внешний трек — как у соседних
+// селектов (r8). Кит даёт треку radius + inset (выглядит круглее контроллов).
+// Белая плашка выбранного сегмента ниже и с инсетом: тот же r8 на ней
+// читается как пилюля. Внутренний радиус = внешний − инсет → r4.
 .cubo-tabs[data-format='segmented'] {
   .cubo-tabs__list {
     border-radius: var(--gtc-component-input-radius);
+    --cubo-tabs-radius: var(--gtc-global-radius-4);
+  }
+
+  .cubo-tabs__tab,
+  .cubo-tabs__indicator {
+    border-radius: var(--gtc-global-radius-4);
   }
 }
 

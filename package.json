@@ -10,7 +10,7 @@
     "build:school": "vite build --mode school --outDir dist/school",
     "build:service": "vite build --mode service --outDir dist/service",
     "build:all": "npm run test && npm run typecheck && npm run build:school && npm run build:service",
-    "test": "node scripts/test-proposal.mjs && node scripts/test-profile-draft.mjs",
+    "test": "node scripts/test-proposal.mjs && node scripts/test-profile-draft.mjs && node scripts/test-primary-ink.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

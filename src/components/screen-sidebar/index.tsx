@@ -95,7 +95,7 @@ export default defineComponent({
           <span class={['scr-sidebar__mark', props.logo && 'is-logo']} aria-hidden="true">
             <ClientBrand letter={markLetter.value} src={props.logo} />
           </span>
-          <span class="scr-sidebar__app">{props.app}</span>
+          {!props.logo && <span class="scr-sidebar__app">{props.app}</span>}
           <button
             type="button"
             class="scr-sidebar__toggle"

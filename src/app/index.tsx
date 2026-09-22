@@ -234,7 +234,7 @@ export default defineComponent({
             </div>
             </div>
             <div class="showcase-footer__line">
-              <span>© 2026 Cubo · {profile.footer.note}</span>
+              <span>© 2026 {profile.partner?.name.trim() || 'RAND'} · {profile.footer.note}</span>
             </div>
             </div>
           </div>

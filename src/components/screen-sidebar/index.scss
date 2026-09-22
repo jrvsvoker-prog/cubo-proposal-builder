@@ -36,8 +36,18 @@
     font-weight: var(--gtc-global-typography-font-weight-semibold);
 
     &.is-logo {
+      width: auto;
+      max-width: 132px;
       background: transparent;
       color: transparent;
+      border-radius: 0;
+
+      .client-brand,
+      .client-brand img {
+        width: auto;
+        max-width: 132px;
+        height: 100%;
+      }
     }
   }
 
@@ -77,6 +87,12 @@
 
   // Бренд — одна пара «маркер/иконка» в DOM; что видно, решают состояния ниже:
   // на десктопе виден маркер и кнопка сворачивания, в рейке и в свёрнутом — кнопка раскрытия.
+  // В узкой рейке знак остаётся квадратом 28, иначе широкий логотип разъедет колонку.
+  &__mark-btn .scr-sidebar__mark.is-logo {
+    width: var(--gtc-global-size-unit-28);
+    max-width: var(--gtc-global-size-unit-28);
+  }
+
   &__mark-btn {
     position: relative;
     display: none;

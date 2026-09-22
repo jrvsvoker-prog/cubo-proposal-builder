@@ -426,6 +426,7 @@ try {
     const profile = JSON.parse(fs.readFileSync(out, 'utf8'))
     validateProfile(profile)
     assert.equal(profile.partner, undefined)
+    assert.equal(profile.footer.text.includes('Cubo'), false)
     assert.equal(profile.hero.intro, undefined)
     assert.equal(profile.estimate.items.length, 5)
     assert.deepEqual(profile.estimate.items.map(i => [i.from, i.to ?? null]), [
@@ -463,6 +464,8 @@ try {
     assert.equal(profile.hero.intro, summary.proposal.intro)
     assert.equal(profile.partner.name, 'RAND')
     assert.equal(profile.partner.logo, undefined)
+    assert.match(profile.footer.text, /пример от RAND/)
+    assert.equal(profile.footer.text.includes('Cubo'), false)
     // Смета заменяет базу целиком, без смешивания позиций и rate.
     assert.deepEqual(profile.estimate.items.map(i => i.id), ['dashboard', 'portal'])
     assert.equal('rate' in profile.estimate, false)
