@@ -1,6 +1,7 @@
 import { computed, defineComponent, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { CuboIcon } from '@cuboapp/ui-vue'
 import ClientBrand from '../client-brand'
+import { isLogoMark } from '../../utils/logo-fit'
 
 /** Декоративный левый сайдбар демо-экрана: бренд, поиск, меню, пользователь. */
 export default defineComponent({
@@ -65,6 +66,8 @@ export default defineComponent({
 
     // Маркер бренда — первая буква продукта на primary (С/К/П).
     const markLetter = computed(() => props.app.trim().charAt(0).toLocaleUpperCase('ru'))
+    // В рейке нужен квадратный знак. Широкое слово туда не влезает — рисуем букву.
+    const railLogo = computed(() => props.logo && isLogoMark(props.logo) ? props.logo : '')
 
     // Поиск работает как фильтр меню; nav остаётся декоративным.
     const visibleNav = computed(() => {
@@ -85,8 +88,8 @@ export default defineComponent({
             aria-expanded={railOpen.value}
             onClick={pressMark}
           >
-            <span class={['scr-sidebar__mark', props.logo && 'is-logo']} aria-hidden="true">
-              <ClientBrand letter={markLetter.value} src={props.logo} />
+            <span class={['scr-sidebar__mark', railLogo.value && 'is-logo']} aria-hidden="true">
+              <ClientBrand letter={markLetter.value} src={railLogo.value} />
             </span>
             <span class="scr-sidebar__mark-btn-icon" aria-hidden="true">
               <CuboIcon icon="layout-sidebar" size={20} />
