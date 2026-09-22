@@ -1,0 +1,43 @@
+.est { width: min(1240px, calc(100% - 64px)); margin-inline: auto; padding-block: 48px 8px; scroll-margin-block-start: 24px; }
+.est__head { margin-block-end: 20px; }
+.est__title { margin: 0; font-size: clamp(var(--gtc-theme-type-title-1-font-size), 3vw, var(--gtc-theme-type-display-3-font-size)); line-height: 1.15; letter-spacing: -.025em; font-weight: var(--gtc-global-typography-font-weight-semibold); }
+.est__text { max-inline-size: 560px; margin: 12px 0 0; color: var(--gtc-theme-text-secondary); font-size: var(--gtc-theme-type-body-1-font-size); line-height: 1.6; }
+.est__icon {
+  display: grid; place-items: center; flex-shrink: 0;
+  inline-size: 40px; block-size: 40px; border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-muted); color: var(--client-primary);
+}
+.est__copy { display: grid; gap: 4px; min-inline-size: 0; }
+.est__name { font-weight: var(--gtc-global-typography-font-weight-semibold); }
+.est__price { font-weight: var(--gtc-global-typography-font-weight-semibold); font-variant-numeric: tabular-nums; }
+.est__cards {
+  display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px;
+  list-style: none; margin: 0; padding: 0;
+}
+.est__card {
+  grid-column: span 2;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start;
+  min-inline-size: 0; padding: 20px 22px;
+  border-radius: var(--gtc-global-radius-16); background: var(--gtc-theme-surface-elevated);
+  &:nth-child(n + 4) { grid-column: span 3; }
+}
+.est__card--from { grid-column: 1 / -1; align-items: center; .est__price { font-size: var(--gtc-global-typography-font-size-20); } }
+.est__total { margin: 16px 0 0; color: var(--gtc-theme-text-secondary); strong { color: var(--gtc-theme-text-default); } }
+.est__rate { color: var(--gtc-theme-text-secondary); }
+
+@media (max-width: 1000px) {
+  .est__card { grid-column: span 3; }
+  .est__card--from { grid-column: 1 / -1; }
+}
+
+@media (max-width: 640px) {
+  .est { width: calc(100% - 32px); padding-block: 28px 4px; }
+  .est__cards { grid-template-columns: 1fr; }
+  .est__card,
+  .est__card:nth-child(n + 4),
+  .est__card--from { grid-column: 1 / -1; }
+}
+
+@media (max-width: 400px) {
+  .est { width: calc(100% - 24px); }
+}

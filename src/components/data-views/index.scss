@@ -1,0 +1,717 @@
+// Представления данных (таблица / пайплайн / карточки) в визуальном ядре КП:
+// белая страница, сайдбар, серые поверхности r24, белые внутренние блоки.
+// Контролы — medium/32 r8: табы pill, селекты и поиск — серые поля без рамки.
+// Второе имя контейнера proposal-dash — для рейки сайдбара ≤640.
+
+.dv {
+  container: dv proposal-dash / inline-size;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-inline-size: 0;
+  padding: var(--gtc-global-size-unit-8);
+  color: var(--gtc-theme-text-default);
+  background: var(--gtc-theme-surface-page);
+}
+
+.dv__inner {
+  container: dv-body / inline-size;
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gtc-global-size-unit-20);
+  padding: var(--gtc-global-size-unit-28);
+  background: var(--gtc-theme-surface-page);
+}
+
+// --- шапка страницы -----------------------------------------------------------
+
+.dv__page {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gtc-global-size-unit-12) var(--gtc-global-size-unit-20);
+  flex-wrap: wrap;
+}
+
+.dv__titles {
+  display: grid;
+  gap: 3px;
+  min-inline-size: 0;
+
+  h3 {
+    margin: 0;
+    font-size: var(--gtc-theme-type-title-1-font-size);
+    line-height: var(--gtc-theme-type-title-1-line-height);
+    letter-spacing: var(--gtc-theme-type-title-1-letter-spacing);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    color: var(--gtc-theme-text-default);
+  }
+}
+
+.dv__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  margin: 0;
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+// Переключатель видов — pill-табы (канон: серые пилюли без общего фона, 32px).
+.dv__views {
+  margin-inline-start: auto;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+
+  .cubo-tabs__list {
+    max-inline-size: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+}
+
+// --- фильтры ------------------------------------------------------------------
+// Тулбар как в аналитике: капсовая подпись над серым полем, без плашки.
+
+.dv-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-24);
+}
+
+.dv-tool {
+  display: grid;
+  gap: var(--gtc-global-size-unit-6);
+  min-inline-size: 0;
+
+  > .cubo-select,
+  > .cubo-text {
+    justify-self: start;
+  }
+}
+
+.dv-tool__label {
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+// Серые поля без рамки (канон); радиус приходит из --gtc-component-input-radius=8.
+// min-inline-size: 0 — селект может сжиматься в переносимой строке фильтров
+// (иначе min-content триггера держит строку ~490px и распирает страницу на 390).
+.dv-tool > .cubo-select {
+  max-inline-size: 240px;
+  inline-size: auto;
+  min-inline-size: 0;
+
+  .cubo-select__tag {
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .cubo-select__more {
+    flex-shrink: 0;
+  }
+}
+
+.dv-tool > .cubo-text {
+  inline-size: 220px;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+// Локальный слот остаётся узнаваемым и в телепортированном списке кита.
+.cubo-select__panel:has(.dv-filter-option) {
+  // CuboSelect задаёт min-width по ширине триггера; текст не расширяет панель.
+  inline-size: min-content;
+}
+
+.dv-filter-option {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.dv-tool__reset {
+  align-self: flex-end;
+  display: grid;
+  place-items: center;
+  inline-size: var(--gtc-global-size-unit-32);
+  block-size: var(--gtc-global-size-unit-32);
+  margin-inline-start: auto;
+  border: 0;
+  border-radius: var(--gtc-global-radius-8);
+  background: none;
+  color: var(--gtc-theme-text-muted);
+  cursor: pointer;
+  transition:
+    color var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing),
+    background var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+
+  &:hover {
+    background: var(--gtc-theme-surface-muted);
+    color: var(--gtc-theme-text-default);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--gtc-theme-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// --- воронка -------------------------------------------------------------------
+// Одна колонка для сегмента и подписи — начала всегда совпадают.
+.dv-funnel {
+  container: dv-funnel / inline-size;
+  padding: var(--gtc-global-size-unit-16);
+  border-radius: var(--gtc-global-radius-24);
+  background: var(--gtc-theme-surface-muted);
+}
+
+.dv-funnel__stages {
+  display: grid;
+  grid-template-columns: var(--funnel-columns);
+  gap: var(--gtc-global-size-unit-4);
+}
+
+.dv-funnel__item {
+  display: grid;
+  grid-template-rows: 10px auto;
+  align-content: start;
+  gap: var(--gtc-global-size-unit-8);
+  min-inline-size: 0;
+}
+
+.dv-funnel__track {
+  min-inline-size: 0;
+  border-radius: var(--gtc-global-radius-8);
+  overflow: hidden;
+}
+
+.dv-funnel__seg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  border-radius: inherit;
+  background: var(--stage-color);
+}
+
+// Тот же код стадии у сегментов и точек колонок; теги — примитив .status-tag.
+.dv-funnel__seg,
+.dv-pipe__dot {
+  &.is-neutral { --stage-color: var(--gtc-global-color-gray-40); }
+  &.is-primary-weak { --stage-color: var(--gtc-theme-accent-primary-weak); }
+  &.is-primary { --stage-color: var(--gtc-theme-accent-primary-surface); }
+  &.is-success { --stage-color: var(--gtc-theme-accent-success-surface); }
+}
+
+.dv-funnel__caption {
+  display: grid;
+  align-content: start;
+  gap: var(--gtc-global-size-unit-4);
+  min-inline-size: 0;
+  padding-inline-end: var(--gtc-global-size-unit-8);
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-body-2-font-size);
+  line-height: var(--gtc-theme-type-body-2-line-height);
+  overflow-wrap: anywhere;
+
+  b {
+    color: var(--gtc-theme-text-default);
+    font-size: var(--gtc-theme-type-numeric-sm-font-size);
+    line-height: var(--gtc-theme-type-numeric-sm-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.dv-funnel__item.is-empty b {
+  color: var(--gtc-theme-text-muted);
+}
+
+// Для малых долей или узкой плоскости: независимые полосы с одинаковой шкалой.
+// Ширина заполнения — реальная доля суммы; ноль не рисуется цветным сегментом.
+@mixin dv-funnel-separated {
+  grid-template-columns: repeat(var(--funnel-count, 4), minmax(0, 1fr));
+  gap: var(--gtc-global-size-unit-16);
+
+  .dv-funnel__track {
+    background: var(--gtc-theme-border-default);
+  }
+
+  .dv-funnel__seg {
+    inline-size: var(--funnel-share);
+  }
+}
+
+.dv-funnel.is-separated .dv-funnel__stages {
+  @include dv-funnel-separated;
+}
+
+@container dv-funnel (max-width: 800px) {
+  .dv-funnel__stages {
+    --funnel-count: 2;
+    @include dv-funnel-separated;
+  }
+}
+
+@container dv-funnel (max-width: 400px) {
+  .dv-funnel__stages {
+    --funnel-count: 1;
+  }
+}
+
+// --- стадии -------------------------------------------------------------------
+// Тег стадии — примитив .status-tag (shared); здесь только возраст.
+
+// Возраст заявки — сигнал «застоялась»: серый, тёплый от 6 дней, красный от 8.
+.dv-age {
+  white-space: nowrap;
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+
+  &.is-flat { color: var(--gtc-theme-text-muted); }
+  &.is-warn { color: var(--gtc-theme-accent-warning-subtle-text); }
+  &.is-danger { color: var(--gtc-theme-accent-danger-subtle-text); }
+}
+
+// --- пайплайн ------------------------------------------------------------------
+
+.dv-pipe {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.dv-pipe__col {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gtc-global-size-unit-8);
+  min-width: 0;
+  padding: var(--gtc-global-size-unit-16);
+  border-radius: var(--gtc-global-radius-24);
+  background: var(--gtc-theme-surface-muted);
+}
+
+.dv-pipe__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+// Цветная точка связывает колонку с тоном чипа стадии в таблице и карточках.
+.dv-pipe__dot {
+  flex: 0 0 auto;
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: 999px;
+  background: var(--stage-color);
+}
+
+.dv-pipe__name {
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
+  color: var(--gtc-theme-text-default);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.dv-pipe__count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 18px;
+  margin-inline-start: auto;
+  padding: 0 6px;
+  border-radius: 999px;
+  border: 0;
+  background: var(--gtc-theme-surface-page);
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+// Сумма колонки — крупнее подписей: число headline, суффикс мелкий muted.
+.dv-pipe__sum {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
+
+  b {
+    color: var(--gtc-theme-text-default);
+    font-size: var(--gtc-theme-type-headline-font-size);
+    line-height: var(--gtc-theme-type-headline-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  span {
+    color: var(--gtc-theme-text-muted);
+    font-size: var(--gtc-theme-type-caption-2-font-size);
+    line-height: var(--gtc-theme-type-caption-2-line-height);
+  }
+}
+
+.dv-pipe__cards {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+// Пустая колонка — пунктирная зона, читается как место под заявки.
+.dv-pipe__empty {
+  padding: 18px 10px;
+  border: 1px dashed var(--gtc-theme-border-default);
+  border-radius: var(--gtc-global-radius-12);
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  text-align: center;
+}
+
+// Одна структура карточки для пайплайна и сетки.
+.dv-card {
+  display: grid;
+  align-content: start;
+  gap: var(--gtc-global-size-unit-16);
+  min-inline-size: 0;
+  padding: var(--gtc-global-size-unit-12);
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+}
+
+.dv-card__header {
+  display: grid;
+  align-content: start;
+  gap: var(--gtc-global-size-unit-4);
+  min-inline-size: 0;
+}
+
+.dv-card__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gtc-global-size-unit-8);
+  min-inline-size: 0;
+
+  strong {
+    min-inline-size: 0;
+    color: var(--gtc-theme-text-default);
+    font-size: var(--gtc-theme-type-body-1-font-size);
+    line-height: var(--gtc-theme-type-body-1-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    overflow-wrap: anywhere;
+  }
+
+  .status-tag {
+    flex: 0 0 auto;
+  }
+}
+
+// Тег стадии — примитив .status-tag (shared): одна строка, без переносов.
+// Колонка таблицы расширена под самый длинный тег, а не тег сжат под колонку.
+.dv .status-tag {
+  flex: 0 0 auto;
+  max-inline-size: 100%;
+}
+
+.dv-card__context {
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-body-2-font-size);
+  line-height: var(--gtc-theme-type-body-2-line-height);
+  overflow-wrap: anywhere;
+}
+
+.dv-card__next,
+.dv-card__meta {
+  display: grid;
+  align-content: start;
+  gap: var(--gtc-global-size-unit-4);
+  min-inline-size: 0;
+}
+
+.dv-card__next {
+  color: var(--gtc-theme-text-default);
+  font-size: var(--gtc-theme-type-body-1-font-size);
+  line-height: var(--gtc-theme-type-body-1-line-height);
+  overflow-wrap: anywhere;
+}
+
+.dv-card__label,
+.dv-card__created {
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-body-2-font-size);
+  line-height: var(--gtc-theme-type-body-2-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-regular);
+}
+
+.dv-card__amount {
+  color: var(--gtc-theme-text-default);
+  font-size: var(--gtc-global-typography-font-size-16);
+  line-height: var(--gtc-global-typography-line-height-24);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+
+  small {
+    color: var(--gtc-theme-text-muted);
+    font-size: var(--gtc-theme-type-body-2-font-size);
+    font-weight: var(--gtc-global-typography-font-weight-regular);
+  }
+}
+
+// --- таблица ------------------------------------------------------------------
+// Белая плоскость с рамкой; CuboTable без своей оболочки.
+
+.dv__table {
+  border: 1px solid var(--gtc-theme-border-subtle);
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+  // Скругление режет шапку кита; по горизонтали — прокрутка, когда колонки шире плоскости.
+  overflow: auto hidden;
+
+  .cubo-table {
+    border: 0;
+    border-radius: 0;
+  }
+
+  .cubo-table__grid {
+    min-inline-size: 736px;
+  }
+
+  &.dv__table--units .cubo-table__grid {
+    min-inline-size: 816px;
+  }
+
+  // Ячейки плотнее по горизонтали (кит: 12px); действие над записью не выводится.
+  .cubo-table {
+    --cubo-table-x: 10px;
+  }
+
+  // Текстовые колонки: имя и направление держат свой максимум без роста, весь запас
+  // ширины уходит «Следующему шагу», который к тому же переносится на две строки.
+  // «Стадия» — фикс под самый длинный тег («Готов к выдаче») без переносов.
+  // С филиалом: фикс. 80+148+88+92 = 408 + минимумы 128+140+140 = 408 → 816.
+  // Без филиала: 736px. Освободившаяся ширина остаётся у «Следующего шага».
+  .column-child {
+    flex: 0 1 128px;
+    min-inline-size: 128px;
+  }
+
+  .column-direction {
+    flex: 0 1 140px;
+    min-inline-size: 140px;
+  }
+
+  .column-next {
+    flex: 1 1 140px;
+    min-inline-size: 140px;
+  }
+
+  // «Следующий шаг» — до двух строк вместо многоточия (04-F).
+  .column-next .dv-tbl__ell {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow: hidden;
+  }
+
+  // У колонок с правым краем индикатор сортировки стоит слева от подписи — иначе
+  // иконка «Суммы» упирается в подпись «Возраст» (04-F).
+  .cubo-table__cell--head[data-align='right'] {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+  }
+
+  .cubo-table__cell--head {
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-medium);
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--gtc-theme-text-secondary);
+  }
+
+  .cubo-table__cell--body {
+    font-size: var(--gtc-theme-type-body-2-font-size);
+    line-height: var(--gtc-theme-type-body-2-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-regular);
+    --cubo-table-y: 11px;
+    overflow: hidden;
+  }
+
+  .cubo-table__cell--body,
+  .cubo-table__cell--head,
+  .cubo-table__cell--foot {
+    border-block-end-color: var(--gtc-theme-border-subtle);
+  }
+}
+
+.dv-tbl__name,
+.dv-tbl__ell,
+.dv-tbl__num {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dv-tbl__name {
+  color: var(--gtc-theme-text-default);
+  font-weight: var(--gtc-global-typography-font-weight-medium);
+}
+
+.dv-tbl__muted {
+  color: var(--gtc-theme-text-muted);
+}
+
+.dv-tbl__num {
+  font-variant-numeric: tabular-nums;
+}
+
+.dv-tbl__foot-label {
+  color: var(--gtc-theme-text-muted);
+}
+
+.dv-tbl__foot-sum {
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  color: var(--gtc-theme-text-default);
+}
+
+// --- сетка карточек -----------------------------------------------------------
+.dv-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--gtc-global-size-unit-12);
+
+  > .dv-card {
+    padding: var(--gtc-global-size-unit-16);
+    border-radius: var(--gtc-global-radius-16);
+    background: var(--gtc-theme-surface-muted);
+  }
+}
+
+// Общее пустое состояние (карточки; у таблицы — своё emptyText, у пайплайна —
+// пунктирные зоны внутри колонок).
+.dv-empty {
+  grid-column: 1 / -1;
+  display: grid;
+  place-items: center;
+  min-block-size: 140px;
+  padding: 12px;
+  border: 1px dashed var(--gtc-theme-border-default);
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  text-align: center;
+}
+
+// --- адаптив -------------------------------------------------------------------
+
+@container dv (max-width: 640px) {
+  .dv__inner {
+    padding: var(--gtc-global-size-unit-16);
+    gap: var(--gtc-global-size-unit-16);
+  }
+}
+
+@container dv-body (max-width: 880px) {
+  .dv-pipe {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dv-cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container dv-body (max-width: 640px) {
+  .dv__page {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .dv__views {
+    margin-inline-start: 0;
+  }
+
+  .dv__views .cubo-tabs__icon {
+    display: none;
+  }
+
+  .dv__views .cubo-tabs__list {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: thin;
+  }
+
+  .dv__views .cubo-tabs__tab {
+    flex: 1 1 auto;
+    min-block-size: var(--gtc-global-size-unit-40);
+    padding-inline: var(--gtc-global-size-unit-8);
+  }
+
+  .dv-filters {
+    align-items: stretch;
+  }
+
+  .dv-tool {
+    flex: 1 1 100%;
+
+    > .cubo-select,
+    > .cubo-text {
+      inline-size: 100%;
+      max-inline-size: none;
+      justify-self: stretch;
+    }
+  }
+
+  .dv-tool__reset {
+    margin-inline-start: 0;
+    inline-size: var(--gtc-global-size-unit-40);
+    block-size: var(--gtc-global-size-unit-40);
+  }
+
+  .dv .cubo-select,
+  .dv .cubo-text {
+    --gtc-component-input-size: var(--gtc-global-size-unit-40);
+  }
+
+  .dv__table {
+    overflow: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: thin;
+  }
+}
+
+@container dv-body (max-width: 560px) {
+  .dv-pipe {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dv-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

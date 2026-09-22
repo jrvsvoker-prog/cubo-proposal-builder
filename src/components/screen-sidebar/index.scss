@@ -1,0 +1,394 @@
+// Левый сайдбар демо-экрана: серая плашка, бренд, поиск, меню, пользователь.
+.scr-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: var(--gtc-global-size-unit-24);
+  width: 240px;
+  padding: var(--gtc-global-size-unit-16) var(--gtc-global-size-unit-12);
+  background: var(--gtc-theme-surface-muted);
+  border-radius: var(--gtc-global-radius-24);
+  color: var(--gtc-theme-text-default);
+  font-size: var(--gtc-theme-type-body-2-font-size);
+  line-height: var(--gtc-theme-type-body-2-line-height);
+  overflow: hidden;
+  transition: width .22s ease;
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--gtc-global-size-unit-10);
+    padding: var(--gtc-global-size-unit-4) var(--gtc-global-size-unit-8);
+  }
+
+  // Маркер бренда: первая буква продукта белым на primary (внутрь кладёт tsx).
+  &__mark {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: var(--gtc-global-size-unit-28);
+    height: var(--gtc-global-size-unit-28);
+    border-radius: var(--gtc-global-radius-8);
+    background: var(--gtc-theme-accent-primary-surface);
+    color: var(--gtc-theme-accent-primary-text);
+    font-size: var(--gtc-theme-type-body-1-font-size);
+    line-height: 1;
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+
+    &.is-logo {
+      background: transparent;
+      color: transparent;
+    }
+  }
+
+  &__app {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    transition: opacity .18s ease;
+  }
+
+  &__toggle {
+    flex: 0 0 auto;
+    margin-left: auto;
+    display: grid;
+    place-items: center;
+    width: var(--gtc-global-size-unit-28);
+    height: var(--gtc-global-size-unit-28);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: var(--gtc-global-radius-8);
+    color: var(--gtc-theme-text-secondary);
+    cursor: pointer;
+
+    &:hover {
+      color: var(--gtc-theme-text-default);
+      background: var(--gtc-theme-accent-primary-subtle-surface-hover);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--gtc-theme-focus-ring);
+      outline-offset: var(--gtc-global-size-unit-2);
+    }
+  }
+
+  // Бренд — одна пара «маркер/иконка» в DOM; что видно, решают состояния ниже:
+  // на десктопе виден маркер и кнопка сворачивания, в рейке и в свёрнутом — кнопка раскрытия.
+  &__mark-btn {
+    position: relative;
+    display: none;
+    place-items: center;
+    width: var(--gtc-global-size-unit-40);
+    height: var(--gtc-global-size-unit-40);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    border-radius: var(--gtc-global-radius-12);
+    cursor: pointer;
+
+    .scr-sidebar__mark { transition: opacity .15s ease; }
+
+    &-icon {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      color: var(--gtc-theme-text-secondary);
+      opacity: 0;
+      transition: opacity .15s ease;
+    }
+
+    &:hover,
+    &:focus-visible {
+      .scr-sidebar__mark { opacity: 0; }
+      .scr-sidebar__mark-btn-icon { opacity: 1; }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--gtc-theme-focus-ring);
+      outline-offset: var(--gtc-global-size-unit-2);
+    }
+  }
+
+  &__search {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--gtc-global-size-unit-8);
+    padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+    background: var(--gtc-theme-surface-page);
+    border-radius: var(--gtc-global-radius-full);
+    color: var(--gtc-theme-text-secondary);
+
+    &:focus-within { box-shadow: 0 0 0 1px var(--gtc-theme-focus-ring); }
+  }
+
+  &__input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--gtc-theme-text-default);
+    font: inherit;
+    outline: none;
+
+    &::placeholder { color: var(--gtc-theme-text-muted); }
+  }
+
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gtc-global-size-unit-4);
+    min-width: 0;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--gtc-global-size-unit-10);
+    min-width: 0;
+    padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+    border-radius: var(--gtc-global-radius-12);
+    color: var(--gtc-theme-text-secondary);
+    cursor: default;
+
+    &:hover:not(.is-active) {
+      color: var(--gtc-theme-text-default);
+      background: var(--gtc-theme-accent-primary-subtle-surface-hover);
+    }
+
+    &.is-active {
+      color: var(--gtc-theme-accent-primary-text);
+      background: var(--gtc-theme-accent-primary-surface);
+      font-weight: var(--gtc-global-typography-font-weight-semibold);
+    }
+  }
+
+  &__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: opacity .18s ease;
+  }
+
+  &__empty {
+    padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+    color: var(--gtc-theme-text-muted);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+  }
+
+  &__spacer {
+    flex: 1 0 var(--gtc-global-size-unit-8);
+  }
+
+  &__avatar {
+    align-self: center;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: var(--gtc-global-size-unit-40);
+    height: var(--gtc-global-size-unit-40);
+    border-radius: var(--gtc-global-radius-full);
+    background: var(--gtc-theme-surface-page);
+    color: var(--gtc-theme-text-secondary);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: 1;
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: var(--gtc-global-size-unit-10);
+    min-width: 0;
+    padding: var(--gtc-global-size-unit-10);
+    background: var(--gtc-global-color-alpha-black-4);
+    border-radius: var(--gtc-global-radius-16);
+  }
+
+  &__user-text {
+    display: grid;
+    align-content: center;
+    gap: var(--gtc-global-size-unit-2);
+    min-width: 0;
+    transition: opacity .18s ease;
+  }
+
+  &__user-name,
+  &__user-role {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__user-name {
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+  }
+
+  &__user-role {
+    color: var(--gtc-theme-text-secondary);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+  }
+}
+
+// Рейка: свернутое состояние — узкая колонка, только иконки, поиск скрыт.
+.scr-sidebar.is-collapsed {
+  width: var(--gtc-global-size-unit-64);
+  gap: var(--gtc-global-size-unit-16);
+  padding-inline: var(--gtc-global-size-unit-10);
+
+  .scr-sidebar__brand {
+    justify-content: center;
+    gap: 0;
+    padding-inline: 0;
+
+    > .scr-sidebar__mark { display: none; }
+    > .scr-sidebar__toggle { display: none; }
+    > .scr-sidebar__mark-btn { display: grid; }
+  }
+
+  .scr-sidebar__app,
+  .scr-sidebar__label,
+  .scr-sidebar__user-text {
+    width: 0;
+    opacity: 0;
+  }
+
+  .scr-sidebar__search,
+  .scr-sidebar__empty { display: none; }
+
+  .scr-sidebar__item {
+    align-self: center;
+    justify-content: center;
+    gap: 0;
+    width: var(--gtc-global-size-unit-40);
+    padding: var(--gtc-global-size-unit-10) 0;
+  }
+
+  .scr-sidebar__user {
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+  }
+}
+
+// Та же рейка при узком контейнере дашборда (правила дублируются текстом).
+// Кнопка сворачивания в рейке не нужна: вместо неё компонент показывает маркер-кнопку раскрытия.
+@container proposal-dash (max-width: 640px) {
+  .scr-sidebar {
+    width: var(--gtc-global-size-unit-64);
+    gap: var(--gtc-global-size-unit-16);
+    padding-inline: var(--gtc-global-size-unit-10);
+    // Рейку держит контейнерный запрос: без анимации ширины компонент сразу видит финальный размер.
+    transition: none;
+
+    .scr-sidebar__mark-btn {
+      width: var(--gtc-global-size-unit-40);
+      height: var(--gtc-global-size-unit-40);
+    }
+
+    .scr-sidebar__item {
+      min-block-size: var(--gtc-global-size-unit-40);
+    }
+
+    .scr-sidebar__brand {
+      justify-content: center;
+      gap: 0;
+      padding-inline: 0;
+
+      > .scr-sidebar__mark { display: none; }
+      > .scr-sidebar__toggle { display: none; }
+      > .scr-sidebar__mark-btn { display: grid; }
+    }
+
+    .scr-sidebar__app,
+    .scr-sidebar__label,
+    .scr-sidebar__user-text {
+      width: 0;
+      opacity: 0;
+    }
+
+    .scr-sidebar__search,
+    .scr-sidebar__empty { display: none; }
+
+    .scr-sidebar__item {
+      align-self: center;
+      justify-content: center;
+      gap: 0;
+      width: var(--gtc-global-size-unit-40);
+      padding: var(--gtc-global-size-unit-10) 0;
+    }
+
+    .scr-sidebar__user {
+      justify-content: center;
+      padding: 0;
+      background: transparent;
+    }
+  }
+}
+
+// Рейка-меню: маркер раскрыл список поверх контента (контейнер остаётся узким).
+// Высота — как у вьюпорта, но не больше контейнера: в стенде дашборд растёт вниз.
+.scr-sidebar.is-rail-open {
+  position: absolute;
+  top: var(--gtc-global-size-unit-8);
+  bottom: auto;
+  left: var(--gtc-global-size-unit-8);
+  height: min(calc(100dvh - 16px), calc(100% - 16px));
+  z-index: 30;
+  width: min(240px, calc(100% - 16px));
+  gap: var(--gtc-global-size-unit-24);
+  padding-inline: var(--gtc-global-size-unit-12);
+  box-shadow: var(--gtc-global-effects-shadow-30);
+  transition: none;
+  overflow: auto;
+
+  .scr-sidebar__brand {
+    justify-content: flex-start;
+    gap: var(--gtc-global-size-unit-10);
+    padding-inline: var(--gtc-global-size-unit-8);
+
+    > .scr-sidebar__mark { display: grid; }
+    > .scr-sidebar__toggle { display: grid; }
+    > .scr-sidebar__mark-btn { display: none; }
+  }
+
+  .scr-sidebar__app,
+  .scr-sidebar__label,
+  .scr-sidebar__user-text {
+    width: auto;
+    opacity: 1;
+  }
+
+  .scr-sidebar__toggle {
+    display: grid;
+    width: var(--gtc-global-size-unit-40);
+    height: var(--gtc-global-size-unit-40);
+  }
+
+  .scr-sidebar__search { display: flex; }
+  .scr-sidebar__empty { display: inline; }
+
+  .scr-sidebar__item {
+    align-self: stretch;
+    justify-content: flex-start;
+    gap: var(--gtc-global-size-unit-10);
+    width: auto;
+    min-block-size: var(--gtc-global-size-unit-40);
+    padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+  }
+
+  .scr-sidebar__user {
+    justify-content: flex-start;
+    padding: var(--gtc-global-size-unit-10);
+    background: var(--gtc-global-color-alpha-black-4);
+  }
+}

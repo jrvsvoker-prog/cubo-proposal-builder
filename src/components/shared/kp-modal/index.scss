@@ -1,0 +1,180 @@
+// KpModal — общий примитив модалки КП.
+// Обёртка над CuboModal: свои шапка/тело/подвал, без линий кита.
+
+.kp-modal {
+  // Скрыть китовские header/close, если вдруг кит рендерит пустую шапку.
+  .cubo-modal__header,
+  .cubo-modal__close,
+  .cubo-modal__footer {
+    display: none;
+  }
+
+  // Диалог: радиус, ширина, фон.
+  .cubo-modal__dialog {
+    inline-size: min(var(--kp-modal-width, 560px), calc(100vw - 24px));
+    max-block-size: calc(100dvh - 24px);
+    overflow: auto;
+    border-radius: var(--c-radius-50);
+    box-shadow: var(--c-shadow-50);
+    background-color: var(--c-color-bg);
+  }
+
+  // Убрать паддинги кита с body — управляем сами через panel.
+  .cubo-modal__body {
+    padding: 0;
+    font: inherit;
+  }
+}
+
+// Panel — внутренний контейнер с собственными паддингами.
+.kp-modal__panel {
+  padding: var(--gtc-global-size-unit-28) var(--gtc-global-size-unit-32) var(--gtc-global-size-unit-32);
+
+  @media (max-width: 479px) {
+    padding: var(--gtc-global-size-unit-20);
+  }
+}
+
+// Head: заголовок + кнопка закрытия.
+.kp-modal__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--gtc-global-size-unit-16);
+}
+
+.kp-modal__title {
+  margin: 0;
+  font: var(--c-font-headline-300-heavy);
+  // --c-font-headline-300-heavy-letter-spacing — кит-алиас, в styles dist нет
+  letter-spacing: var(--gtc-theme-type-title-2-letter-spacing, -.01em);
+  color: var(--c-color-text);
+}
+
+.kp-modal__meta {
+  margin: var(--gtc-global-size-unit-6) 0 0;
+  font: var(--c-font-paragraph-200-light);
+  letter-spacing: var(--gtc-theme-type-body-1-letter-spacing, 0);
+  color: var(--c-color-text-secondary);
+}
+
+// Круглая кнопка закрытия: 40×40, bg-subtle, иконка secondary.
+.kp-modal__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--gtc-global-size-unit-40);
+  height: var(--gtc-global-size-unit-40);
+  padding: 0;
+  border: 0;
+  border-radius: var(--c-radius-full);
+  background: var(--c-color-bg-subtle);
+  color: var(--c-color-text-secondary);
+  cursor: pointer;
+  transition: background-color var(--gtc-global-motion-duration-150) var(--gtc-global-motion-easing-standard),
+              color var(--gtc-global-motion-duration-150) var(--gtc-global-motion-easing-standard);
+
+  @media (hover: hover) {
+    &:hover {
+      background: var(--c-color-bg-muted);
+      color: var(--c-color-text);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--gtc-theme-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// Body: прокрутка при переполнении.
+.kp-modal__body {
+  margin-top: var(--gtc-global-size-unit-24);
+  font: var(--c-font-paragraph-200-light);
+  letter-spacing: var(--gtc-theme-type-body-1-letter-spacing, 0);
+  color: var(--c-color-text);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  max-height: calc(100dvh - 200px);
+}
+
+// Footer: без верхней линии, кнопки справа.
+.kp-modal__footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--gtc-global-size-unit-8);
+  margin-top: var(--gtc-global-size-unit-24);
+}
+
+// --------------------------------------------------------------------------
+// Список-подложка (переиспользуемый блок).
+// --------------------------------------------------------------------------
+.kp-modal__list {
+  background: var(--c-color-bg-subtle);
+  border-radius: var(--c-radius-40);
+  padding: var(--gtc-global-size-unit-6);
+  margin: 0;
+  list-style: none;
+}
+
+.kp-modal__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: var(--gtc-global-size-unit-16);
+  min-height: var(--gtc-global-size-unit-48);
+  padding: 0 var(--gtc-global-size-unit-14);
+  align-items: center;
+}
+
+.kp-modal__row-name {
+  color: var(--c-color-text);
+}
+
+.kp-modal__row-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-color-text);
+}
+
+.kp-modal__row-note {
+  color: var(--c-color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  min-width: var(--gtc-global-size-unit-64);
+  text-align: right;
+}
+
+// --------------------------------------------------------------------------
+// Пояснительная заметка под списком.
+// --------------------------------------------------------------------------
+.kp-modal__note {
+  margin: var(--gtc-global-size-unit-16) 0 0;
+  color: var(--c-color-text-secondary);
+  font: var(--c-font-paragraph-200-light);
+  letter-spacing: var(--gtc-theme-type-body-1-letter-spacing, 0);
+}
+
+@media (max-width: 479px) {
+  .kp-modal__body {
+    max-height: calc(100dvh - 160px);
+  }
+
+  .kp-modal__footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .kp-modal__footer .cubo-button-v2 {
+    min-block-size: var(--gtc-global-size-unit-40);
+    inline-size: 100%;
+  }
+
+  .kp-modal__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gtc-global-size-unit-4);
+    padding-block: var(--gtc-global-size-unit-10);
+  }
+
+  .kp-modal__row-note {
+    text-align: start;
+  }
+}

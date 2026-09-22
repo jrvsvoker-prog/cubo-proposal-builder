@@ -1,0 +1,21 @@
+// Тег статуса/стадии — общий примитив КП (04-E, 11.09). Заливка — ступень *-weak (30), как у delta-pill:
+// ступень 10 на серых поверхностях не читалась. Код стадий заявок: neutral → primary-weak → primary → success.
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--gtc-global-size-unit-4);
+  padding: var(--gtc-global-size-unit-2) var(--gtc-global-size-unit-8);
+  border-radius: var(--gtc-global-radius-6);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  white-space: nowrap;
+
+  &.is-neutral { background: var(--gtc-theme-accent-neutral-weak); color: var(--gtc-global-color-gray-70); }
+  &.is-primary-weak { background: var(--gtc-theme-accent-primary-weak); color: var(--gtc-theme-accent-primary-subtle-text); }
+  &.is-primary { background: var(--gtc-theme-accent-primary-surface); color: var(--gtc-theme-accent-primary-text); }
+  &.is-success { background: var(--gtc-theme-accent-success-weak); color: var(--gtc-theme-accent-success-subtle-text); }
+  &.is-warning { background: var(--gtc-theme-accent-warning-weak); color: var(--gtc-theme-accent-warning-subtle-text); }
+  &.is-danger { background: var(--gtc-theme-accent-danger-weak); color: var(--gtc-theme-accent-danger-subtle-text); }
+  &.is-info { background: var(--gtc-theme-accent-info-weak); color: var(--gtc-theme-accent-info-subtle-text); }
+}

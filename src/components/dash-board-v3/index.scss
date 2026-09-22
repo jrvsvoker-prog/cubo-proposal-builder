@@ -1,0 +1,181 @@
+@use '../../styles/control-context' as ctl;
+
+// BoardUI composition, rebuilt with Cubo tokens. Scoped to the dashboard.
+.proposal-dash {
+  container: proposal-dash / inline-size;
+  position: relative; // рейка-меню сайдбара раскрывается поверх контента от края дашборда
+  display: flex;
+  align-items: stretch;
+  padding: var(--gtc-global-size-unit-8);
+  color: var(--gtc-theme-text-default);
+  background: var(--gtc-theme-surface-page);
+  font-size: var(--gtc-theme-type-body-1-font-size);
+  line-height: var(--gtc-theme-type-body-1-line-height);
+  --pdash-surface: var(--gtc-theme-surface-muted);
+  --pdash-secondary: var(--gtc-global-color-gray-70);
+
+  // dash-body меряет контент без сайдбара: иначе 768/1024 остаются в десктопной сетке.
+  &__body { container: dash-body / inline-size; flex: 1; min-width: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--gtc-global-size-unit-20); padding: var(--gtc-global-size-unit-28); }
+  &__heading { display: flex; justify-content: space-between; align-items: center; gap: var(--gtc-global-size-unit-16); }
+  &__heading h3 { margin: 0; font-size: var(--gtc-theme-type-title-1-font-size); line-height: var(--gtc-theme-type-title-1-line-height); font-weight: var(--gtc-global-typography-font-weight-semibold); letter-spacing: var(--gtc-theme-type-title-1-letter-spacing); }
+  &__heading-actions { display: flex; align-items: center; gap: var(--gtc-global-size-unit-16); }
+  // Тулбар — один ряд контролов высотой 32: сегмент, период, «i»; подписей нет (01-B, вариант A)
+  &__toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gtc-global-size-unit-12); padding-bottom: var(--gtc-global-size-unit-4); }
+  // Сегментные табы — к внешней кромке 32px, как селекты и «i»: трек = таб +
+  // инсет 4×2, поэтому таб опускаем до 24 (тот же приём, что в ana2).
+  &__toolbar .cubo-tabs { --gtc-component-tabs-size: var(--gtc-global-size-unit-24); }
+  &__toolbar > .cubo-select { inline-size: auto; min-inline-size: 180px; }
+  // Период без выбора (у масштаба один вариант) — статичная метка в габаритах селекта (01-C):
+  // та же высота, кегль и минимум ширины, без рамки и шеврона; полный диапазон дат — в «О периоде».
+  &__period { display: inline-flex; align-items: center; min-inline-size: 180px; block-size: var(--gtc-global-size-unit-32); padding-inline: var(--gtc-global-size-unit-12); color: var(--gtc-theme-text-default); font-size: var(--gtc-component-input-font-size); line-height: var(--gtc-component-input-line-height); font-weight: var(--gtc-global-typography-font-weight-medium); }
+  &__kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--gtc-global-size-unit-16); }
+  &__main { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: var(--gtc-global-size-unit-16); align-items: stretch; &.is-compact { grid-template-columns: minmax(0, 1fr); } }
+  &__dialog { display: grid; gap: var(--gtc-global-size-unit-12); p { margin: 0; line-height: 1.5; } }
+  &__selection-actions { display: flex; gap: var(--gtc-global-size-unit-8); }
+  &__options { display: grid; gap: var(--gtc-global-size-unit-12); max-height: 300px; overflow-y: auto; padding: var(--gtc-global-size-unit-4); }
+  &__footer-status { margin-right: auto; color: var(--c-color-text-secondary); font: var(--c-font-paragraph-200-light); }
+  .delta-pill { border-radius: var(--gtc-global-radius-6); font-size: var(--gtc-theme-type-caption-1-font-size); line-height: var(--gtc-theme-type-caption-1-line-height); padding: var(--gtc-global-size-unit-2) var(--gtc-global-size-unit-6); }
+}
+
+// Единая инфо-кнопка «i»: круглая, 32px — в высоту мелких контролов тулбара.
+.pdash-info-btn {
+  display: grid; place-items: center;
+  width: var(--gtc-global-size-unit-32); height: var(--gtc-global-size-unit-32);
+  padding: 0; border: none; border-radius: var(--gtc-global-radius-full);
+  background: transparent; color: var(--pdash-secondary, var(--gtc-theme-text-muted));
+  cursor: pointer; transition: background-color .15s ease, color .15s ease;
+  &:hover { background: var(--gtc-theme-surface-page); color: var(--gtc-theme-text-default); }
+  &:focus-visible { outline: 2px solid var(--gtc-theme-focus-ring); outline-offset: 2px; }
+}
+
+.pdash-card {
+  @include ctl.on-muted;
+  min-width: 0;
+  padding: var(--gtc-global-size-unit-24);
+  background: var(--pdash-surface);
+  border-radius: var(--gtc-global-radius-24);
+  &__head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--gtc-global-size-unit-12); margin-bottom: var(--gtc-global-size-unit-16); }
+  &__titles { display: grid; gap: var(--gtc-global-size-unit-4); min-width: 0; }
+  &__title { margin: 0; font-size: var(--gtc-theme-type-title-3-font-size); line-height: var(--gtc-theme-type-title-3-line-height); font-weight: var(--gtc-global-typography-font-weight-semibold); }
+  &__sub { margin: 0; color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-1-font-size); line-height: var(--gtc-theme-type-caption-1-line-height); }
+}
+.pdash-kpi {
+  @include ctl.on-muted;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: var(--gtc-global-size-unit-20);
+  background: var(--pdash-surface);
+  border-radius: var(--gtc-global-radius-24);
+  &__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--gtc-global-size-unit-16); }
+  &__icon { display: grid; place-items: center; width: var(--gtc-global-size-unit-40); height: var(--gtc-global-size-unit-40); background: var(--gtc-theme-surface-page); border-radius: var(--gtc-global-radius-12); color: var(--gtc-theme-text-default); }
+  &__name { margin: 0 0 var(--gtc-global-size-unit-4); min-width: 0; color: var(--pdash-secondary); font-size: var(--gtc-theme-type-body-1-font-size); line-height: var(--gtc-theme-type-body-1-line-height); font-weight: var(--gtc-global-typography-font-weight-medium); }
+  &__value { font-size: var(--gtc-theme-type-numeric-xl-font-size); line-height: var(--gtc-theme-type-numeric-xl-line-height); letter-spacing: var(--gtc-theme-type-numeric-xl-letter-spacing); font-weight: var(--gtc-theme-type-numeric-xl-font-weight); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  &__snap { min-height: var(--gtc-global-size-unit-16); margin: var(--gtc-global-size-unit-4) 0 var(--gtc-global-size-unit-12); color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); line-height: var(--gtc-theme-type-caption-2-line-height); }
+  // Фут всегда в одну строку: «Было …» тянется и обрезается с ellipsis,
+  // дельта-пилюля пришита вправо — высота футов одинакова во всех карточках.
+  &__foot { display: flex; align-items: center; flex-wrap: nowrap; gap: var(--gtc-global-size-unit-6); margin-top: auto; padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12); background: var(--gtc-theme-surface-page); border-radius: var(--gtc-global-radius-12); }
+  &__base { min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-1-font-size); line-height: var(--gtc-theme-type-caption-1-line-height); }
+  &__foot > .delta-pill { flex: none; margin-left: auto; }
+}
+.pdash-chart {
+  display: flex; flex-direction: column;
+  &__legend { display: flex; flex-wrap: wrap; gap: var(--gtc-global-size-unit-8) var(--gtc-global-size-unit-12); margin: 0; padding: 0; list-style: none; color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); line-height: var(--gtc-theme-type-caption-2-line-height); }
+  &__legend li { display: inline-flex; align-items: center; gap: var(--gtc-global-size-unit-6); }
+  &__legend i { width: var(--gtc-global-size-unit-16); height: 0; border-top: 2px solid var(--gtc-theme-accent-primary-surface); }
+  &__legend i.is-base { border-top-style: dashed; border-top-color: var(--gtc-global-color-gray-60); }
+  &__summary { display: flex; flex-wrap: wrap; align-items: center; gap: var(--gtc-global-size-unit-8) var(--gtc-global-size-unit-12); margin-bottom: var(--gtc-global-size-unit-24); }
+  &__summary-value { font-size: var(--gtc-theme-type-numeric-xl-font-size); line-height: var(--gtc-theme-type-numeric-xl-line-height); letter-spacing: var(--gtc-theme-type-numeric-xl-letter-spacing); font-weight: var(--gtc-theme-type-numeric-xl-font-weight); font-variant-numeric: tabular-nums; }
+  &__summary-label { color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-1-font-size); }
+  &__plot { position: relative; margin-top: auto; }
+  svg { display: block; width: 100%; overflow: visible; border-radius: var(--gtc-global-radius-8); outline-offset: var(--gtc-global-size-unit-4); }
+  svg:focus-visible { outline: 2px solid var(--gtc-theme-focus-ring); }
+  &__grid { stroke: var(--gtc-theme-border-default); stroke-width: 1; stroke-dasharray: 3 5; opacity: .65; shape-rendering: crispEdges; }
+  &__axis-y { fill: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); text-anchor: end; font-variant-numeric: tabular-nums; }
+  &__axis-x { fill: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); text-anchor: middle; font-variant-numeric: tabular-nums; }
+  &__gradient-start { stop-color: var(--gtc-theme-accent-primary-surface); stop-opacity: .2; }
+  &__gradient-end { stop-color: var(--gtc-theme-accent-primary-surface); stop-opacity: .02; }
+  &__line { fill: none; stroke: var(--gtc-theme-accent-primary-surface); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; &.is-base { stroke: var(--gtc-global-color-gray-60); stroke-width: 1.5; stroke-dasharray: 5 5; } }
+  &__dot { fill: var(--gtc-theme-accent-primary-surface); stroke: var(--pdash-surface); stroke-width: 2; }
+  &__hover line { stroke: var(--gtc-theme-text-muted); stroke-dasharray: 3 3; }
+  &__hover circle { fill: var(--gtc-theme-surface-page); stroke: var(--gtc-theme-accent-primary-surface); stroke-width: 2; }
+  &__hover circle.is-base { stroke: var(--gtc-global-color-gray-60); }
+  &__tip { position: absolute; z-index: 5; display: grid; gap: var(--gtc-global-size-unit-4); max-width: 100%; padding: var(--gtc-global-size-unit-12); border-radius: var(--gtc-global-radius-12); background: var(--gtc-theme-surface-inverse); color: var(--gtc-theme-text-inverse); box-shadow: var(--gtc-global-effects-shadow-30); pointer-events: none; transform: translate(-50%, -100%); }
+  &__tip-month, &__tip-base { margin: 0; font-size: var(--gtc-theme-type-caption-2-font-size); line-height: var(--gtc-theme-type-caption-2-line-height); color: var(--gtc-global-color-alpha-white-80); }
+  &__tip-value { margin: 0; font-size: var(--gtc-theme-type-body-1-font-size); line-height: var(--gtc-theme-type-body-1-line-height); font-weight: var(--gtc-global-typography-font-weight-semibold); font-variant-numeric: tabular-nums; }
+  &__note { margin: var(--gtc-global-size-unit-16) 0 0; color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); line-height: var(--gtc-theme-type-caption-2-line-height); }
+}
+// Узкая карточка (is-narrow ставит компонент по замеренной ширине <480):
+// легенда уходит под заголовок одной строкой, подпись диапазона уже
+// сокращена до «сен 25 — авг 26» в разметке. Только пока шапка — строка:
+// на ≤640 она уже колонка (flex-basis там считался бы по высоте).
+@container proposal-dash (min-width: 641px) {
+  .pdash-chart.is-narrow .pdash-card__head { flex-wrap: wrap; }
+  .pdash-chart.is-narrow .pdash-chart__legend { flex: 1 0 100%; flex-wrap: nowrap; }
+}
+.pdash-units {
+  display: flex; flex-direction: column;
+  &__total { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: var(--gtc-global-size-unit-8); margin-bottom: var(--gtc-global-size-unit-16); color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-1-font-size); }
+  &__list { display: grid; align-content: start; gap: var(--gtc-global-size-unit-12); margin: 0; padding: 0; list-style: none; }
+  // Много подразделений (>8, класс is-many): ~3 строки + обрезанный хвост
+  // четвёртой как намёк на скролл — иначе карточка растягивает ряд с графиком.
+  &.is-many .pdash-units__list { max-height: 400px; overflow-y: auto; scrollbar-width: thin; }
+  &__row { padding: var(--gtc-global-size-unit-16); border-radius: var(--gtc-global-radius-16); background: var(--gtc-theme-surface-page); }
+  &__rowtop { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--gtc-global-size-unit-8); }
+  &__name { min-width: 0; overflow-wrap: anywhere; font-weight: var(--gtc-global-typography-font-weight-medium); }
+  &__amount { display: flex; align-items: center; gap: var(--gtc-global-size-unit-8); margin-top: var(--gtc-global-size-unit-8); }
+  &__value { font-size: var(--gtc-theme-type-headline-font-size); line-height: var(--gtc-theme-type-headline-line-height); font-weight: var(--gtc-global-typography-font-weight-semibold); font-variant-numeric: tabular-nums; }
+  &__share { color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-1-font-size); font-variant-numeric: tabular-nums; }
+  &__bar { height: var(--gtc-global-size-unit-6); margin-top: var(--gtc-global-size-unit-12); border-radius: var(--gtc-global-radius-full); background: var(--gtc-theme-surface-muted); overflow: hidden; i { display: block; height: 100%; border-radius: inherit; background: var(--gtc-theme-accent-primary-surface); } }
+  &__rowfoot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--gtc-global-size-unit-4) var(--gtc-global-size-unit-12); margin: var(--gtc-global-size-unit-6) 0 0; color: var(--pdash-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); line-height: var(--gtc-theme-type-caption-2-line-height); font-variant-numeric: tabular-nums; }
+}
+// Ширины — по контенту (dash-body), не по рамке с сайдбаром.
+// 1440: тело ~984 → 4 колонки. 1024/768: 2. Телефон: 1.
+@container dash-body (max-width: 880px) {
+  .proposal-dash__kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proposal-dash__main { grid-template-columns: minmax(0, 1fr); }
+  .pdash-units__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pdash-kpi { padding: var(--gtc-global-size-unit-16); }
+  .pdash-kpi__value { font-size: var(--gtc-theme-type-numeric-lg-font-size); line-height: var(--gtc-theme-type-numeric-lg-line-height); }
+  .pdash-kpi__snap { min-height: var(--gtc-global-size-unit-16); }
+}
+@container proposal-dash (max-width: 640px) {
+  .proposal-dash__body { padding: var(--gtc-global-size-unit-16); gap: var(--gtc-global-size-unit-16); }
+}
+
+@container dash-body (max-width: 560px) {
+  .proposal-dash__heading { flex-wrap: wrap; }
+  .proposal-dash__heading-actions { width: 100%; justify-content: space-between; }
+  .proposal-dash__toolbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--gtc-global-size-unit-12);
+  }
+  .proposal-dash__toolbar > .cubo-tabs { grid-column: 1 / -1; max-inline-size: 100%; }
+  .proposal-dash__toolbar > .cubo-tabs .cubo-tabs__list { max-inline-size: 100%; }
+  .proposal-dash__toolbar > .cubo-tabs .cubo-tabs__tab { flex: 1 1 auto; min-block-size: var(--gtc-global-size-unit-40); }
+  .proposal-dash__toolbar > .cubo-select,
+  .proposal-dash__toolbar > .proposal-dash__period { grid-column: 1; min-inline-size: 0; inline-size: 100%; }
+  .proposal-dash__toolbar > .pdash-info-btn {
+    grid-column: 2;
+    width: var(--gtc-global-size-unit-40);
+    height: var(--gtc-global-size-unit-40);
+  }
+  .proposal-dash__kpis { grid-template-columns: minmax(0, 1fr); }
+  .pdash-kpi { padding: var(--gtc-global-size-unit-20); }
+  .pdash-kpi__value { font-size: var(--gtc-theme-type-numeric-xl-font-size); line-height: var(--gtc-theme-type-numeric-xl-line-height); }
+  .pdash-kpi__head { margin-bottom: var(--gtc-global-size-unit-12); }
+  .pdash-kpi__snap { min-height: auto; }
+  .pdash-kpi__foot { flex-wrap: wrap; }
+  .pdash-kpi__base { flex-basis: 100%; white-space: normal; }
+  .pdash-card { padding: var(--gtc-global-size-unit-20); }
+  .pdash-card__head { flex-direction: column; }
+  .pdash-chart__summary { margin-bottom: var(--gtc-global-size-unit-16); }
+  .pdash-chart svg { min-block-size: 200px; }
+  .pdash-units__list { grid-template-columns: minmax(0, 1fr); }
+  .pdash-units__total { grid-template-columns: minmax(0, 1fr) auto; }
+  .pdash-units__total > .delta-pill { display: none; }
+  .proposal-dash .cubo-select,
+  .proposal-dash .cubo-button-v2 { --gtc-component-input-size: var(--gtc-global-size-unit-40); min-block-size: var(--gtc-global-size-unit-40); }
+}

@@ -1,0 +1,17 @@
+// Контекст контролов (правило 11.09, 04-B): контрол контрастирует с поверхностью.
+// По умолчанию (белая страница) — серая заливка без рамки; серые карточки подключают
+// миксин on-muted — белая заливка с рамкой. Читают переменные CuboSelect / CuboText (base.scss).
+@mixin on-page {
+  --kp-control-bg: var(--gtc-theme-surface-muted);
+  --kp-control-bg-hover: var(--gtc-theme-accent-neutral-subtle-surface-hover);
+  --kp-control-border: transparent;
+  --kp-control-border-hover: transparent;
+  --kp-control-tag-bg: var(--gtc-theme-surface-page);
+}
+@mixin on-muted {
+  --kp-control-bg: var(--c-color-bg);
+  --kp-control-bg-hover: var(--c-color-bg);
+  --kp-control-border: var(--c-color-border-subtle);
+  --kp-control-border-hover: var(--c-color-border-strong);
+  --kp-control-tag-bg: var(--c-color-bg-muted);
+}

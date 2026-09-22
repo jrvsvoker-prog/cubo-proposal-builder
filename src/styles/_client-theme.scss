@@ -1,0 +1,42 @@
+// Локальная тема клиента: один цвет из профиля (--client-primary, ставится на :root
+// компонентом дашборда) разворачивается в шкалу через color-mix.
+// Класс вешается на корень экрана дашборда и на teleported-обёртки его модалок
+// вместе с data-gtc-theme="light" и data-cubo-gtc-bridge — тогда и GTC-, и legacy
+// --c-color-primary контролы кита внутри зоны берут цвет клиента, а семантические
+// success/warning/danger остаются авторскими.
+
+:root {
+  // Фолбэк до JS-установки значения: авторский синий Cubo.
+  --client-primary: var(--gtc-global-color-brand-60);
+  --client-primary-ink: var(--gtc-global-color-white);
+}
+
+.cubo-client-theme {
+  --gtc-theme-accent-primary-surface: var(--client-primary);
+  --gtc-theme-accent-primary-surface-hover: color-mix(in oklab, var(--client-primary) 88%, black);
+  --gtc-theme-accent-primary-surface-active: color-mix(in oklab, var(--client-primary) 78%, black);
+  --gtc-theme-accent-primary-text: var(--client-primary-ink);
+  --gtc-theme-accent-primary-subtle-surface: color-mix(in oklab, var(--client-primary) 10%, white);
+  --gtc-theme-accent-primary-subtle-surface-hover: color-mix(in oklab, var(--client-primary) 18%, white);
+  --gtc-theme-accent-primary-subtle-text: color-mix(in oklab, var(--client-primary) 76%, black);
+  --gtc-theme-accent-primary-weak: color-mix(in oklab, var(--client-primary) 32%, white);
+  --gtc-theme-accent-primary-border: color-mix(in oklab, var(--client-primary) 56%, white);
+
+  // Фокус и выделение.
+  --gtc-theme-focus-ring: var(--client-primary);
+  --gtc-theme-focus-selection-bg: color-mix(in oklab, var(--client-primary) 16%, white);
+  --gtc-theme-input-border-focus: color-mix(in oklab, var(--client-primary) 72%, white);
+
+  // Ссылки и табы (сегментированный переключатель масштаба).
+  --gtc-theme-link-default: color-mix(in oklab, var(--client-primary) 82%, black);
+  --gtc-theme-link-hover: color-mix(in oklab, var(--client-primary) 70%, black);
+  --gtc-theme-tabs-indicator-primary: var(--client-primary);
+  --gtc-theme-tabs-primary-surface: var(--client-primary);
+  --gtc-theme-tabs-tonal-surface: color-mix(in oklab, var(--client-primary) 12%, white);
+  --gtc-theme-tabs-tonal-text: color-mix(in oklab, var(--client-primary) 76%, black);
+  --gtc-theme-tabs-badge-tonal-surface: color-mix(in oklab, var(--client-primary) 12%, white);
+  --gtc-theme-tabs-badge-tonal-text: color-mix(in oklab, var(--client-primary) 76%, black);
+
+  // Кольцо фокуса primary-кнопки кита читает глобальную альфу бренда напрямую.
+  --gtc-global-color-brand-alpha-48: color-mix(in srgb, var(--client-primary) 48%, transparent);
+}

@@ -1,0 +1,27 @@
+{
+  "name": "cubo-school-showcase",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5197",
+    "build": "vite build",
+    "dev:service": "vite --mode service --host 0.0.0.0 --port 5198",
+    "build:school": "vite build --mode school --outDir dist/school",
+    "build:service": "vite build --mode service --outDir dist/service",
+    "build:all": "npm run test && npm run typecheck && npm run build:school && npm run build:service",
+    "test": "node scripts/test-proposal.mjs && node scripts/test-profile-draft.mjs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "vue": "3.5.32",
+    "vue-router": "4.6.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue-jsx": "^4.1.1",
+    "sass-embedded": "^1.89.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.0.5",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}

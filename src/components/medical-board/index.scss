@@ -1,0 +1,269 @@
+// Медицинский экран — вариант дашборда в стиле визуального ядра КП:
+// белая страница, серые карточки surface-muted r24, белые внутренние блоки,
+// numeric-xl, акцент — primary клиента (--client-primary через cubo-client-theme).
+// Каркас повторяет .proposal-dash; карточки переиспользуют .pdash-card.
+
+.medboard {
+  // Второе имя proposal-dash — чтобы к .medboard применялась рейка сайдбара ≤640
+  // (правила рейки живут в screen-sidebar/index.scss под этим контейнером).
+  container: medboard proposal-dash / inline-size;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  padding: var(--gtc-global-size-unit-8);
+  color: var(--gtc-theme-text-default);
+  background: var(--gtc-theme-surface-page);
+  font-size: var(--gtc-theme-type-body-1-font-size);
+  line-height: var(--gtc-theme-type-body-1-line-height);
+  --mb-secondary: var(--gtc-global-color-gray-70);
+
+  &__body { flex: 1; min-width: 0; overflow-y: auto; display: flex; flex-direction: column; gap: var(--gtc-global-size-unit-20); padding: var(--gtc-global-size-unit-28); }
+  &__heading { display: flex; justify-content: space-between; align-items: center; gap: var(--gtc-global-size-unit-16); }
+  &__heading h3 { margin: 0; font-size: var(--gtc-theme-type-title-1-font-size); line-height: var(--gtc-theme-type-title-1-line-height); font-weight: var(--gtc-global-typography-font-weight-semibold); letter-spacing: var(--gtc-theme-type-title-1-letter-spacing); }
+  &__heading-actions { display: flex; align-items: center; gap: var(--gtc-global-size-unit-8); }
+  &__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gtc-global-size-unit-16); align-items: stretch; }
+}
+
+// Крупное число + подпись — рецепт pdash-kpi.
+.med-stat {
+  display: flex; align-items: baseline; gap: var(--gtc-global-size-unit-6);
+  margin: 0;
+  &__num { font-size: var(--gtc-theme-type-numeric-xl-font-size); line-height: var(--gtc-theme-type-numeric-xl-line-height); letter-spacing: var(--gtc-theme-type-numeric-xl-letter-spacing); font-weight: var(--gtc-theme-type-numeric-xl-font-weight); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  &__unit { color: var(--mb-secondary); font-size: var(--gtc-theme-type-caption-1-font-size); }
+}
+
+// Пейджер периода: ghost-кнопки-шевроны + подпись.
+.med-pager {
+  display: flex; align-items: center; gap: var(--gtc-global-size-unit-2);
+  color: var(--mb-secondary);
+  &__label { font-size: var(--gtc-theme-type-caption-1-font-size); white-space: nowrap; }
+  &__btn {
+    display: grid; place-items: center;
+    width: var(--gtc-global-size-unit-24); height: var(--gtc-global-size-unit-24);
+    border: 0; border-radius: var(--gtc-global-radius-6);
+    background: none; color: inherit; cursor: pointer;
+    &:hover { background: var(--gtc-theme-surface-page); }
+    &:focus-visible { outline: 2px solid var(--gtc-theme-focus-ring); outline-offset: 1px; }
+  }
+}
+
+// Кольца прогресса (календарь, активность).
+.med-ring { display: block; }
+.med-ring__track, .med-ring__arc { fill: none; }
+.med-ring__arc { stroke-linecap: round; }
+
+// Легенда с цветными точками (сон, активность).
+.med-legend {
+  display: flex; align-items: center; gap: var(--gtc-global-size-unit-8);
+  font-size: var(--gtc-theme-type-caption-1-font-size); line-height: var(--gtc-theme-type-caption-1-line-height);
+  &__dot { flex: none; width: var(--gtc-global-size-unit-8); height: var(--gtc-global-size-unit-8); border-radius: var(--gtc-global-radius-full); }
+  &__label { color: var(--mb-secondary); b, strong { font-weight: var(--gtc-global-typography-font-weight-medium); color: var(--gtc-theme-text-default); } }
+  &__score { margin-left: auto; font-weight: var(--gtc-global-typography-font-weight-semibold); font-variant-numeric: tabular-nums; }
+}
+
+// ── Пациент ──────────────────────────────────────────────────────────
+.med-patient {
+  display: flex; flex-direction: column;
+  &__hero { display: grid; justify-items: center; gap: var(--gtc-global-size-unit-10); margin: var(--gtc-global-size-unit-4) 0 var(--gtc-global-size-unit-20); }
+  &__ava {
+    position: relative;
+    display: grid; place-items: center;
+    width: var(--gtc-global-size-unit-80); height: var(--gtc-global-size-unit-80);
+    border-radius: var(--gtc-global-radius-full);
+    background: var(--gtc-theme-accent-primary-subtle-surface);
+    color: var(--gtc-theme-accent-primary-subtle-text);
+    font-size: var(--gtc-theme-type-title-2-font-size);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+  }
+  &__add {
+    position: absolute; top: 0; right: 0;
+    display: grid; place-items: center;
+    width: var(--gtc-global-size-unit-20); height: var(--gtc-global-size-unit-20);
+    border-radius: var(--gtc-global-radius-full);
+    background: var(--gtc-theme-accent-primary-surface);
+    color: var(--gtc-theme-accent-primary-text);
+    font-style: normal;
+  }
+  &__name { margin: 0; max-width: 100%; text-align: center; overflow-wrap: anywhere; font-size: var(--gtc-theme-type-title-3-font-size); line-height: var(--gtc-theme-type-title-3-line-height); font-weight: var(--gtc-global-typography-font-weight-semibold); }
+  &__fields { display: grid; gap: var(--gtc-global-size-unit-8); margin: auto 0 0; padding: 0; list-style: none; }
+}
+
+// Белая внутренняя строка карточки (как pdash-units__row / kpi__foot).
+.med-field {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, auto); align-items: center;
+  gap: var(--gtc-global-size-unit-10);
+  padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+  &__icon { display: grid; place-items: center; color: var(--mb-secondary); }
+  &__label { color: var(--mb-secondary); font-size: var(--gtc-theme-type-body-2-font-size); }
+  &__value { min-width: 0; overflow-wrap: anywhere; text-align: right; font-weight: var(--gtc-global-typography-font-weight-semibold); font-size: var(--gtc-theme-type-body-2-font-size); font-variant-numeric: tabular-nums; }
+}
+
+// ── Шаги: белые колонки-треки, заливка — primary клиента ───────────────
+.med-steps {
+  display: flex; flex-direction: column;
+  &__chart { display: flex; align-items: flex-end; gap: var(--gtc-global-size-unit-8); margin-top: auto; padding-top: var(--gtc-global-size-unit-16); }
+  &__col { flex: 1; min-width: 0; display: grid; gap: var(--gtc-global-size-unit-8); justify-items: center; }
+  &__track {
+    position: relative; width: 100%; height: 130px;
+    border-radius: var(--gtc-global-radius-8);
+    background: var(--gtc-theme-surface-page);
+    overflow: hidden;
+  }
+  &__bar { position: absolute; inset-inline: var(--gtc-global-size-unit-4); bottom: var(--gtc-global-size-unit-4); border-radius: var(--gtc-global-radius-6); background: var(--gtc-theme-accent-primary-surface); }
+  &__day { color: var(--mb-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); }
+}
+
+// ── Сон ──────────────────────────────────────────────────────────────
+.med-sleep {
+  display: flex; flex-direction: column;
+  &__ring { position: relative; display: grid; place-items: center; margin: var(--gtc-global-size-unit-8) 0 var(--gtc-global-size-unit-16); }
+  &__ring svg { width: 140px; height: 140px; }
+  &__track { fill: none; stroke-width: 13; }
+  &__arc { fill: none; stroke-width: 13; stroke-linecap: round; }
+  &__score { position: absolute; font-size: var(--gtc-theme-type-numeric-xl-font-size); line-height: var(--gtc-theme-type-numeric-xl-line-height); font-weight: var(--gtc-theme-type-numeric-xl-font-weight); font-variant-numeric: tabular-nums; }
+  &__legend { display: grid; gap: var(--gtc-global-size-unit-10); margin: auto 0 0; padding: 0; list-style: none; }
+}
+
+// ── Календарь активных дней ──────────────────────────────────────────
+.med-cal {
+  display: flex; flex-direction: column;
+  &__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--gtc-global-size-unit-4); margin-top: var(--gtc-global-size-unit-8); }
+  &__day {
+    display: grid; justify-items: center; gap: var(--gtc-global-size-unit-2);
+    padding: var(--gtc-global-size-unit-6) var(--gtc-global-size-unit-2);
+    border: 2px solid transparent;
+    border-radius: var(--gtc-global-radius-12);
+    background: var(--gtc-theme-surface-page);
+    cursor: pointer;
+    color: var(--gtc-theme-text-default);
+    &:hover { border-color: var(--gtc-theme-accent-primary-border); }
+    &:focus-visible { outline: 2px solid var(--gtc-theme-focus-ring); outline-offset: 1px; }
+    &[data-outside] { opacity: .4; }
+    &[data-selected] { border-color: var(--gtc-theme-accent-primary-surface); }
+    .med-ring { width: 24px; height: 24px; }
+  }
+  &__dnum { font-size: var(--gtc-theme-type-caption-1-font-size); font-variant-numeric: tabular-nums; }
+}
+
+// ── Кольца активности ────────────────────────────────────────────────
+.med-act {
+  display: flex; flex-direction: column;
+  &__date { font-weight: var(--gtc-global-typography-font-weight-semibold); color: var(--gtc-theme-text-default); }
+  &__legend { display: flex; flex-wrap: wrap; gap: var(--gtc-global-size-unit-6) var(--gtc-global-size-unit-16); margin: 0 0 var(--gtc-global-size-unit-8); padding: 0; list-style: none; }
+  &__legend .med-legend__score { margin-left: 0; }
+  &__rings { display: grid; place-items: center; margin: auto; padding-block: var(--gtc-global-size-unit-8); }
+  &__rings .med-ring { width: 190px; height: 190px; }
+}
+
+// ── Уведомления ──────────────────────────────────────────────────────
+.med-alerts {
+  display: flex; flex-direction: column;
+  &__list { display: grid; gap: var(--gtc-global-size-unit-12); margin-top: var(--gtc-global-size-unit-4); }
+}
+.med-alert {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--gtc-global-size-unit-12);
+  padding: var(--gtc-global-size-unit-12);
+  border-radius: var(--gtc-global-radius-16);
+  background: var(--gtc-theme-surface-page);
+  &__icon {
+    display: grid; place-items: center;
+    width: var(--gtc-global-size-unit-40); height: var(--gtc-global-size-unit-40);
+    border-radius: var(--gtc-global-radius-12);
+    &--danger { background: var(--gtc-theme-accent-danger-subtle-surface); color: var(--gtc-theme-accent-danger-subtle-text); }
+    &--warning { background: var(--gtc-theme-accent-warning-subtle-surface); color: var(--gtc-theme-accent-warning-subtle-text); }
+  }
+  &__top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--gtc-global-size-unit-12); margin-bottom: var(--gtc-global-size-unit-2); }
+  &__top b { font-size: var(--gtc-theme-type-body-1-font-size); font-weight: var(--gtc-global-typography-font-weight-semibold); }
+  &__date { color: var(--mb-secondary); font-size: var(--gtc-theme-type-caption-2-font-size); white-space: nowrap; }
+  &__body p { margin: 0; color: var(--mb-secondary); font-size: var(--gtc-theme-type-body-2-font-size); line-height: var(--gtc-theme-type-body-2-line-height); }
+}
+
+// ── Таблица пациентов ────────────────────────────────────────────────
+.med-table {
+  &__head { align-items: flex-end; flex-wrap: wrap; }
+  &__filters { display: flex; flex-wrap: wrap; gap: var(--gtc-global-size-unit-8); align-items: center; }
+  &__filters > * { flex: 0 1 auto; min-width: 0; max-width: 100%; }
+  &__filters .cubo-native-select__select { min-height: var(--gtc-global-size-unit-40); padding-inline: var(--gtc-global-size-unit-12) var(--gtc-global-size-unit-32); border-radius: var(--gtc-global-radius-8); font-size: var(--gtc-theme-type-body-2-font-size); border-color: var(--gtc-theme-border-default); }
+  &__scroll { overflow-x: auto; }
+  &__grid { min-width: 780px; }
+  &__thead {
+    display: grid; align-items: center;
+    grid-template-columns: 32px minmax(0, 1.5fr) minmax(0, 1.1fr) auto minmax(0, 1.3fr) minmax(0, 1fr) auto;
+    gap: var(--gtc-global-size-unit-12);
+    padding: var(--gtc-global-size-unit-8) var(--gtc-global-size-unit-12);
+    color: var(--mb-secondary);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    font-weight: var(--gtc-global-typography-font-weight-medium);
+  }
+  &__row {
+    display: grid; align-items: center;
+    grid-template-columns: 32px minmax(0, 1.5fr) minmax(0, 1.1fr) auto minmax(0, 1.3fr) minmax(0, 1fr) auto;
+    gap: var(--gtc-global-size-unit-12);
+    padding: var(--gtc-global-size-unit-8) var(--gtc-global-size-unit-12);
+    border-radius: var(--gtc-global-radius-12);
+    background: var(--gtc-theme-surface-page);
+    & + & { margin-top: var(--gtc-global-size-unit-4); }
+  }
+  &__check { display: grid; place-items: center; }
+  &__patient { display: flex; align-items: center; gap: var(--gtc-global-size-unit-10); min-width: 0; b { font-weight: var(--gtc-global-typography-font-weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+  &__ava {
+    flex: none; display: grid; place-items: center;
+    width: var(--gtc-global-size-unit-32); height: var(--gtc-global-size-unit-32);
+    border-radius: var(--gtc-global-radius-full);
+    background: var(--gtc-theme-accent-primary-subtle-surface);
+    color: var(--gtc-theme-accent-primary-subtle-text);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+  }
+  &__adm { display: flex; align-items: center; gap: var(--gtc-global-size-unit-6); color: var(--mb-secondary); font-size: var(--gtc-theme-type-body-2-font-size); }
+  &__conds { display: flex; flex-wrap: wrap; gap: var(--gtc-global-size-unit-4); }
+  &__next { color: var(--mb-secondary); font-size: var(--gtc-theme-type-body-2-font-size); }
+  &__actions, &__actions-h { justify-self: end; }
+  &__actions { display: flex; gap: var(--gtc-global-size-unit-4); }
+  &__act {
+    display: grid; place-items: center;
+    width: var(--gtc-global-size-unit-28); height: var(--gtc-global-size-unit-28);
+    border: 1px solid var(--gtc-theme-border-default);
+    border-radius: var(--gtc-global-radius-8);
+    background: var(--gtc-theme-surface-page);
+    color: var(--mb-secondary);
+    cursor: pointer;
+    &:hover { background: var(--gtc-theme-surface-muted); color: var(--gtc-theme-text-default); }
+    &:focus-visible { outline: 2px solid var(--gtc-theme-focus-ring); outline-offset: 1px; }
+  }
+  &__empty { margin: var(--gtc-global-size-unit-12) 0; color: var(--mb-secondary); font-size: var(--gtc-theme-type-body-2-font-size); }
+}
+
+// Статус-пилюля на семантических subtle-тонах.
+.med-status {
+  display: inline-block;
+  padding: var(--gtc-global-size-unit-2) var(--gtc-global-size-unit-8);
+  border-radius: var(--gtc-global-radius-6);
+  font-style: normal;
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  font-weight: var(--gtc-global-typography-font-weight-medium);
+  white-space: nowrap;
+  &--success { background: var(--gtc-theme-accent-success-subtle-surface); color: var(--gtc-theme-accent-success-subtle-text); }
+  &--danger { background: var(--gtc-theme-accent-danger-subtle-surface); color: var(--gtc-theme-accent-danger-subtle-text); }
+  &--warning { background: var(--gtc-theme-accent-warning-subtle-surface); color: var(--gtc-theme-accent-warning-subtle-text); }
+  &--muted { background: var(--gtc-theme-surface-muted); color: var(--gtc-theme-text-muted); }
+}
+
+// ── Адаптив ──────────────────────────────────────────────────────────
+@container medboard (max-width: 1100px) {
+  .medboard__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@container medboard (max-width: 640px) {
+  .medboard__body { padding: var(--gtc-global-size-unit-16); gap: var(--gtc-global-size-unit-16); }
+  .medboard__heading { flex-wrap: wrap; }
+  .medboard__heading-actions { width: 100%; }
+  .medboard__grid { grid-template-columns: minmax(0, 1fr); }
+  .med-table__filters { width: 100%; }
+  .med-table__filters > * { flex: 1 1 100%; }
+  // Ячейки календаря: семь колонок должны влезать в ~240px.
+  .med-cal__grid { gap: var(--gtc-global-size-unit-2); }
+  .med-cal__day { padding: var(--gtc-global-size-unit-4) 0; }
+  .med-cal__day .med-ring { width: 20px; height: 20px; }
+}

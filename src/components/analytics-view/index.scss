@@ -1,0 +1,1179 @@
+@use '../../styles/control-context' as ctl;
+
+// Раздел 02 · Аналитика — оболочка сведена к визуальному ядру КП (dash-board-v3):
+// белая страница, левый сайдбар, серые карточки surface-muted r24, белые
+// внутренние блоки, numeric-xl. Второе имя контейнера proposal-dash нужно,
+// чтобы правила рейки сайдбара (≤640) применялись и здесь.
+
+.ana2 {
+  container: ana2 proposal-dash / inline-size;
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-inline-size: 0;
+  padding: var(--gtc-global-size-unit-8);
+  color: var(--gtc-theme-text-default);
+  background: var(--gtc-theme-surface-page);
+}
+
+.ana2__inner {
+  container: ana2-body / inline-size;
+  flex: 1;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gtc-global-size-unit-20);
+  padding: var(--gtc-global-size-unit-28);
+  background: var(--gtc-theme-surface-page);
+}
+
+.ana2__page {
+  display: grid;
+  gap: 3px;
+
+  h3 {
+    margin: 0;
+    font-size: var(--gtc-theme-type-title-1-font-size);
+    line-height: var(--gtc-theme-type-title-1-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    letter-spacing: var(--gtc-theme-type-title-1-letter-spacing);
+    color: var(--gtc-theme-text-default);
+  }
+
+  span {
+    color: var(--gtc-theme-text-muted);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+  }
+}
+
+// --- фильтры ------------------------------------------------------------------
+// Общие фильтры — отдельная плоскость над всем разделом, а не ещё одна карточка.
+
+// Тулбар фильтров — как на дашборде: подпись над полем, без плашки.
+.ana2-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  // Подписи прижаты к верху: segmented-табы выше селектов на инсеты,
+  // выравнивание по низу разводило «головки».
+  align-items: flex-start;
+  gap: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-16);
+}
+
+.ana2-tool {
+  display: grid;
+  gap: var(--gtc-global-size-unit-6);
+  min-inline-size: 0;
+
+  > .cubo-tabs,
+  > .cubo-select {
+    justify-self: start;
+  }
+}
+
+// Селекты тулбара — общий стиль контрола из styles/base (белый с рамкой);
+// ширина по содержимому, чтобы четыре инструмента вставали в один ряд на 1440.
+.ana2-tool > .cubo-select {
+  inline-size: auto;
+  max-inline-size: 260px;
+}
+
+// «Сравнение»: фиксированный минимум под самую длинную опцию («Предыдущий период»
+// + календарь + шеврон) — текст не обрезается и триггер не прыгает при выборе (02-C).
+.ana2-tool > .cubo-select--lead-cal {
+  min-inline-size: 208px;
+}
+
+.ana2-tool__label {
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ana2-tool__reset {
+  align-self: flex-end;
+  display: grid;
+  place-items: center;
+  inline-size: var(--gtc-global-size-unit-32);
+  block-size: var(--gtc-global-size-unit-32);
+  margin-left: auto;
+  border: 0;
+  border-radius: var(--gtc-global-radius-8);
+  background: none;
+  color: var(--gtc-theme-text-muted);
+  cursor: pointer;
+  transition:
+    color var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing),
+    background var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+
+  &:hover {
+    background: var(--gtc-theme-surface-muted);
+    color: var(--gtc-theme-text-default);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--gtc-theme-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// --- KPI ------------------------------------------------------------------------
+
+.ana2-grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ana2-kpi {
+  @include ctl.on-muted;
+  --ana2-kpi-radius: var(--gtc-global-radius-24);
+  --ana2-kpi-inset: var(--gtc-global-size-unit-8); // отступ белой плашки базы от края карточки
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-inline-size: 0;
+  padding: var(--gtc-global-size-unit-16) var(--gtc-global-size-unit-16) var(--gtc-global-size-unit-8);
+  border: 0;
+  border-radius: var(--ana2-kpi-radius);
+  background: var(--gtc-theme-surface-muted);
+  text-align: start;
+  font: inherit;
+
+  &.is-clickable {
+    cursor: pointer;
+    transition: background var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+
+    &:hover {
+      background: var(--gtc-theme-surface-subtle);
+    }
+  }
+
+  // KPI как селектор метрики таба: активная карточка — кольцо primary и
+  // инвертированная иконка (приём «активный пункт = сплошной primary»).
+  &.is-active {
+    box-shadow: inset 0 0 0 1.5px var(--gtc-theme-accent-primary-surface);
+
+    .ana2-kpi__icon {
+      background: var(--gtc-theme-accent-primary-surface);
+      color: var(--gtc-theme-accent-primary-text);
+    }
+  }
+}
+
+.ana2-kpi__head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-inline-size: 0;
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ana2-kpi__name {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ana2-kpi__icon {
+  display: grid;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+  color: var(--gtc-theme-accent-primary-surface);
+}
+
+.ana2-kpi__row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-inline-size: 0;
+
+  // Пилюля дельты живёт рядом с числом — подпись сверху получает всю строку;
+  // если число широкое, пилюля переносится под него, не обрезая его.
+  .ana2-delta {
+    flex: 0 0 auto;
+  }
+}
+
+.ana2-kpi__value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  // 20 вместо numeric-lg(24): в ряду из четырёх карточек крупное число +
+  // пилюля дельты помещаются в одну строку без обрезаний.
+  font-size: var(--gtc-global-typography-font-size-20);
+  line-height: var(--gtc-theme-type-numeric-lg-line-height);
+  letter-spacing: var(--gtc-theme-type-numeric-lg-letter-spacing);
+  font-weight: var(--gtc-theme-type-numeric-lg-font-weight);
+  color: var(--gtc-theme-text-default);
+  font-variant-numeric: tabular-nums;
+}
+
+// Белый внутренний блок-подпись базового периода (приём pdash-kpi__foot); чип по ширине содержимого (02-N).
+.ana2-kpi__base {
+  justify-self: start;
+  margin-inline: calc(-1 * var(--ana2-kpi-inset)) 0;
+  white-space: nowrap;
+  padding: var(--gtc-global-size-unit-6) var(--gtc-global-size-unit-8);
+  // Концентрично внешнему контуру: внутренний радиус = внешний − отступ (02-H).
+  border-radius: calc(var(--ana2-kpi-radius) - var(--ana2-kpi-inset));
+  background: var(--gtc-theme-surface-page);
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  font-variant-numeric: tabular-nums;
+}
+
+.ana2-delta.is-none {
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+}
+
+// --- карточки-панели ------------------------------------------------------------
+
+.ana2-tab {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gtc-global-size-unit-16);
+}
+
+.ana2-card {
+  @include ctl.on-muted;
+  display: grid;
+  // Трек ограничен шириной карточки: иначе колонка вырастает под min-content
+  // самого широкого ребёнка и выталкивает карточку на узких экранах.
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gtc-global-size-unit-12);
+  align-content: start;
+  min-inline-size: 0;
+  padding: var(--gtc-global-size-unit-24);
+  border: 0;
+  border-radius: var(--gtc-global-radius-24);
+  background: var(--gtc-theme-surface-muted);
+}
+
+.ana2-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ana2-card__titles {
+  display: grid;
+  gap: 2px;
+  min-inline-size: 0;
+
+  h3 {
+    margin: 0;
+    font-size: var(--gtc-theme-type-body-1-font-size);
+    line-height: var(--gtc-theme-type-body-1-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    color: var(--gtc-theme-text-default);
+  }
+
+  span {
+    color: var(--gtc-theme-text-muted);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+  }
+}
+
+.ana2-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+// Все контролы экрана — одной внешней высоты 32px: у segmented-табов трек =
+// таб + инсет 8px, поэтому табы опускаем до 24, поля поднимаем до 32. Правим
+// переменные на самом контроле — иначе data-gtc-size=small у кита перебивает.
+.ana2 .cubo-select,
+.ana2 .cubo-text {
+  --gtc-component-input-size: var(--gtc-global-size-unit-32);
+}
+
+.ana2 .cubo-tabs {
+  --gtc-component-tabs-size: var(--gtc-global-size-unit-24);
+}
+
+// Фон/рамка контролов в карточках — общая тема styles/base (02-E).
+.ana2-card .cubo-select,
+.ana2-card .cubo-text {
+  inline-size: auto;
+  min-inline-size: 148px;
+}
+
+// --- легенда и серии ------------------------------------------------------------
+
+// Цвет серии живёт в --series-color: current — primary клиента, base — серая
+// база, pro-1…pro-6 — монохромная рампа от primary для категорий. Радужная
+// шкала chart-* убрана: на зелёном ядре она выглядела чужеродно.
+.is-current { --series-color: var(--gtc-theme-accent-primary-surface); }
+.is-base { --series-color: var(--gtc-global-color-gray-60); }
+.is-pro-1 { --series-color: var(--gtc-theme-accent-primary-surface); }
+.is-pro-2 { --series-color: color-mix(in srgb, var(--gtc-theme-accent-primary-surface) 68%, var(--gtc-theme-surface-page)); }
+.is-pro-3 { --series-color: color-mix(in srgb, var(--gtc-theme-accent-primary-surface) 46%, var(--gtc-theme-surface-page)); }
+.is-pro-4 { --series-color: color-mix(in srgb, var(--gtc-theme-accent-primary-surface) 30%, var(--gtc-theme-surface-page)); }
+.is-pro-5 { --series-color: color-mix(in srgb, var(--gtc-theme-accent-primary-surface) 18%, var(--gtc-theme-surface-page)); }
+.is-pro-6 { --series-color: var(--gtc-global-color-gray-50); }
+
+.ana2-legend {
+  display: flex;
+  gap: 14px;
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+
+  &--wrap {
+    flex-wrap: wrap;
+    gap: 6px 14px;
+  }
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  i {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 2px;
+    background: var(--series-color, var(--gtc-theme-surface-subtle));
+  }
+
+  // У пары «текущий/база» маркер — отрезок линии, как на графике дашборда.
+  i.is-current,
+  i.is-base {
+    inline-size: 14px;
+    block-size: 0;
+    border-radius: 0;
+    background: none;
+    border-top: 2.5px solid var(--gtc-theme-accent-primary-surface);
+  }
+
+  i.is-base {
+    border-top-width: 1.5px;
+    border-top-style: dashed;
+    border-top-color: var(--gtc-global-color-gray-60);
+  }
+}
+
+.ana2-series {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ana2-series__pill {
+  display: inline-flex;
+  max-inline-size: 100%;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--gtc-theme-surface-page);
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  cursor: pointer;
+  text-align: start;
+
+  span {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+  }
+  transition:
+    background var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing),
+    color var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+
+  i {
+    flex-shrink: 0;
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 2px;
+    background: var(--series-color, var(--gtc-theme-surface-muted));
+  }
+
+  &:hover {
+    color: var(--gtc-theme-text-default);
+  }
+
+  &.is-active {
+    background: var(--gtc-theme-static-black);
+    color: var(--gtc-theme-static-white);
+  }
+}
+
+// --- графики --------------------------------------------------------------------
+// Категории различает монохромная рампа --series-color (см. блок легенды).
+// Заливка под линией — только у пары «текущий/база».
+
+.ana2-chart {
+  position: relative;
+  min-inline-size: 0;
+
+  svg {
+    display: block;
+  }
+}
+
+.ana2-chart__grid {
+  stroke: var(--gtc-theme-border-subtle);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+.ana2-chart__ylab,
+.ana2-chart__xlab {
+  fill: var(--gtc-theme-text-muted);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+// Заливка под текущей серией — градиент primary, как в trend-chart ядра.
+.ana2-chart__gradient-start {
+  stop-color: var(--gtc-theme-accent-primary-surface);
+  stop-opacity: 0.18;
+}
+
+.ana2-chart__gradient-end {
+  stop-color: var(--gtc-theme-accent-primary-surface);
+  stop-opacity: 0.02;
+}
+
+.ana2-chart__line {
+  fill: none;
+  stroke: var(--series-color);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  &.is-base {
+    stroke-width: 1.5;
+    stroke-dasharray: 5 5;
+  }
+
+  &.is-thin {
+    stroke-width: 1.8;
+    opacity: 0.85;
+  }
+}
+
+.ana2-chart__dot {
+  fill: var(--gtc-theme-surface-page);
+  stroke: var(--series-color);
+  stroke-width: 2;
+}
+
+.ana2-chart__guide {
+  stroke: var(--gtc-theme-border-strong);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.ana2-chart__hit {
+  cursor: pointer;
+}
+
+// Тултип действительно парит над содержимым — ему тень положена.
+.ana2-chart__tip {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, calc(-100% - 12px));
+  display: grid;
+  gap: 4px;
+  min-inline-size: 160px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--gtc-theme-surface-page);
+  box-shadow: 0 12px 28px -10px rgb(16 20 28 / 0.25);
+  pointer-events: none;
+}
+
+.ana2-chart__tip-label {
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ana2-chart__tip-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+
+  i {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 2px;
+    flex: 0 0 auto;
+    background: var(--series-color, var(--gtc-theme-surface-muted));
+  }
+
+  b {
+    margin-inline-start: auto;
+    color: var(--gtc-theme-text-default);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &.is-total {
+    border-top: 1px solid var(--gtc-theme-border-subtle);
+    padding-top: 5px;
+
+    b {
+      color: var(--gtc-theme-text-default);
+    }
+  }
+}
+
+.ana2-chart__tip-hint {
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-micro-font-size);
+  line-height: var(--gtc-theme-type-micro-line-height);
+}
+
+// --- стековый график ------------------------------------------------------------
+
+.ana2-stack-col__seg {
+  fill: var(--series-color);
+  // Волосяной разделитель цветом карточки отделяет соседние оттенки рампы.
+  stroke: var(--gtc-theme-surface-muted);
+  stroke-width: 1;
+  transition: opacity var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+}
+
+.ana2-stack-col__empty {
+  fill: var(--gtc-theme-surface-muted);
+}
+
+.ana2-stack-col.is-clickable {
+  cursor: pointer;
+}
+
+.ana2-stack-col.is-hover .ana2-stack-col__seg {
+  opacity: 0.85;
+}
+
+// --- бары структуры -------------------------------------------------------------
+
+.ana2-bars {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gtc-global-size-unit-8);
+}
+
+// Белая строка внутри серой карточки (приём pdash-units__row).
+.ana2-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+  border: 0;
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+  text-align: start;
+  font: inherit;
+
+  &.is-clickable {
+    cursor: pointer;
+    transition: background var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+
+    &:hover {
+      background: var(--gtc-theme-surface-elevated);
+    }
+  }
+}
+
+.ana2-bar__top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gtc-global-size-unit-12);
+}
+
+// Имя растёт и прижимает числовую группу вправо; на переносе (≤640, см. ниже) группа встаёт слева.
+.ana2-bar__name {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+}
+
+.ana2-bar__nums {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gtc-global-size-unit-12);
+  white-space: nowrap;
+  // Один кегль на всю числовую группу: доля раньше сидела внутри <b> и наследовала его.
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  font-variant-numeric: tabular-nums;
+
+  > .delta-pill { margin-inline-start: var(--gtc-global-size-unit-4); }
+}
+
+.ana2-bar__value {
+  color: var(--gtc-theme-text-default);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+// Сплошная шкала на акценте клиента; доля подписана в значении строки.
+.ana2-bar__track {
+  display: block;
+  block-size: 10px;
+  border-radius: 999px;
+  background: var(--gtc-theme-surface-muted);
+  overflow: hidden;
+
+  i {
+    display: block;
+    block-size: 100%;
+    min-inline-size: 3px;
+    border-radius: 999px;
+    background: var(--gtc-theme-accent-primary-surface);
+    transition: inline-size var(--gtc-theme-motion-enter-duration) var(--gtc-theme-motion-enter-easing);
+
+    // Долг — «меньше = лучше»: бар мягким danger, семантику несёт пилюля.
+    &.is-debt {
+      background: var(--gtc-theme-accent-danger-weak);
+    }
+  }
+}
+
+.ana2-bar__share {
+  color: var(--gtc-theme-text-muted);
+  font-weight: var(--gtc-global-typography-font-weight-regular);
+}
+
+// --- драйверы изменения (дивергентные бары от нулевой оси) ----------------------
+
+.ana2-dbars {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--gtc-global-size-unit-8);
+}
+
+.ana2-dbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+  border: 0;
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+  text-align: start;
+  font: inherit;
+
+  &.is-clickable {
+    cursor: pointer;
+    transition: background var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+
+    &:hover {
+      background: var(--gtc-theme-surface-elevated);
+    }
+  }
+}
+
+.ana2-dbar__top {
+  display: flex;
+  align-items: baseline;
+  gap: var(--gtc-global-size-unit-12);
+
+  > .delta-pill { margin-inline-start: var(--gtc-global-size-unit-4); }
+}
+
+.ana2-dbar__name {
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+}
+
+.ana2-dbar__delta {
+  margin-inline-start: auto;
+  color: var(--gtc-theme-text-default);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &.is-neg {
+    color: var(--gtc-theme-accent-danger-subtle-text);
+  }
+}
+
+.ana2-dbar__track {
+  position: relative;
+  display: block;
+  block-size: 10px;
+  border-radius: 999px;
+  background: var(--gtc-theme-surface-muted);
+  overflow: hidden;
+}
+
+// Нулевая ось — волосяная линия; смещается под реальный разброс дельт.
+.ana2-dbar__axis {
+  position: absolute;
+  inset-block: 0;
+  inline-size: 1px;
+  background: var(--gtc-theme-border-strong);
+}
+
+.ana2-dbar__fill {
+  position: absolute;
+  inset-block: 0;
+  min-inline-size: 3px;
+  border-radius: 999px;
+  transition:
+    inline-size var(--gtc-theme-motion-enter-duration) var(--gtc-theme-motion-enter-easing),
+    left var(--gtc-theme-motion-enter-duration) var(--gtc-theme-motion-enter-easing),
+    right var(--gtc-theme-motion-enter-duration) var(--gtc-theme-motion-enter-easing);
+
+  &.is-pos {
+    background: var(--gtc-theme-accent-primary-surface);
+  }
+
+  &.is-neg {
+    background: var(--gtc-theme-accent-danger-surface);
+  }
+}
+
+// --- таблицы --------------------------------------------------------------------
+
+.ana2-table {
+  min-inline-size: 0;
+  overflow-x: auto;
+  padding: var(--gtc-global-size-unit-4) var(--gtc-global-size-unit-8);
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+
+  // Таблица на узких экранах не сжимается — держит натуральную ширину, враппер скроллит
+  table {
+    inline-size: 100%;
+    min-inline-size: 560px;
+    border-collapse: collapse;
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+  }
+
+  th {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--gtc-theme-border-subtle);
+    color: var(--gtc-theme-text-secondary);
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-medium);
+    text-transform: none;
+    letter-spacing: normal;
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--gtc-theme-border-subtle);
+    color: var(--gtc-theme-text-default);
+  }
+
+  tbody tr:last-child td { border-bottom: 0; }
+
+  tbody tr {
+    cursor: pointer;
+    transition: background var(--gtc-theme-motion-state-duration) var(--gtc-theme-motion-state-easing);
+
+    &:hover {
+      background: var(--gtc-theme-surface-muted);
+    }
+  }
+
+  > .ana2-note {
+    padding: var(--gtc-global-size-unit-8) var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-4);
+  }
+
+  .is-num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .is-empty {
+    color: var(--gtc-theme-text-muted);
+    text-align: center;
+    cursor: default;
+  }
+}
+
+.ana2-tname {
+  font-weight: var(--gtc-global-typography-font-weight-medium);
+  color: var(--gtc-theme-text-default);
+}
+
+// Дельта-колонка в таблицах: зелёный/красный текст, как у delta-pill.
+.ana2-tdelta {
+  &.is-up {
+    color: var(--gtc-theme-accent-success-subtle-text);
+  }
+
+  &.is-down {
+    color: var(--gtc-theme-accent-danger-subtle-text);
+  }
+}
+
+.ana2-note {
+  margin: 0;
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+}
+
+// --- пустое состояние -----------------------------------------------------------
+
+.ana2-empty {
+  display: grid;
+  place-items: center;
+  min-block-size: 120px;
+  border: 1px dashed var(--gtc-theme-border-default);
+  border-radius: var(--gtc-global-radius-12);
+  background: var(--gtc-theme-surface-page);
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  text-align: center;
+  padding: 12px;
+}
+
+// --- модалка детализации --------------------------------------------------------
+
+.ana2-modal {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: clamp(12px, 3cqw, 32px);
+  background: var(--gtc-theme-surface-scrim);
+}
+
+.ana2-modal__card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-content: start;
+  inline-size: min(720px, 100%);
+  max-block-size: min(100%, calc(100dvh - var(--gtc-global-size-unit-24)));
+  overflow: auto;
+  padding: 20px 22px 22px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--gtc-theme-surface-page);
+  box-shadow: 0 24px 56px -24px rgb(16 20 28 / 0.4);
+}
+
+.ana2-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  h3 {
+    min-inline-size: 0;
+    overflow-wrap: anywhere;
+    margin: 0;
+    font-size: var(--gtc-theme-type-title-3-font-size);
+    line-height: var(--gtc-theme-type-title-3-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    color: var(--gtc-theme-text-default);
+  }
+}
+
+.ana2-modal__close {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: 28px;
+  block-size: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--gtc-theme-text-secondary);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--gtc-theme-surface-subtle);
+    color: var(--gtc-theme-text-default);
+  }
+}
+
+.ana2-modal__context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ana2-modal__chip {
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--gtc-theme-surface-subtle);
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+}
+
+.ana2-modal__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--gtc-theme-surface-subtle);
+}
+
+.ana2-modal__stat {
+  display: grid;
+  gap: 3px;
+
+  span {
+    color: var(--gtc-theme-text-muted);
+    font-size: var(--gtc-theme-type-caption-2-font-size);
+    line-height: var(--gtc-theme-type-caption-2-line-height);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  b {
+    color: var(--gtc-theme-text-default);
+    font-size: var(--gtc-theme-type-body-1-font-size);
+    line-height: var(--gtc-theme-type-body-1-line-height);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &.is-base b {
+    color: var(--gtc-theme-text-secondary);
+    font-weight: var(--gtc-global-typography-font-weight-medium);
+  }
+}
+
+.ana2-modal__table {
+  min-inline-size: 0;
+  overflow: auto;
+  border: 1px solid var(--gtc-theme-border-subtle);
+  border-radius: 12px;
+
+  table {
+    inline-size: 100%;
+    border-collapse: collapse;
+    font-size: var(--gtc-theme-type-caption-1-font-size);
+    line-height: var(--gtc-theme-type-caption-1-line-height);
+  }
+
+  th {
+    position: sticky;
+    inset-block-start: 0;
+    padding: 8px 10px;
+    background: var(--gtc-theme-surface-subtle);
+    border-bottom: 1px solid var(--gtc-theme-border-subtle);
+    color: var(--gtc-theme-text-muted);
+    font-size: var(--gtc-theme-type-caption-2-font-size);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    text-align: start;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--gtc-theme-border-subtle);
+    color: var(--gtc-theme-text-default);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .is-num {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .is-empty {
+    color: var(--gtc-theme-text-muted);
+    text-align: center;
+  }
+}
+
+.ana2-modal__footer {
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+}
+
+// --- доступность и адаптив ------------------------------------------------------
+
+.ana2-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ana2-kpi.is-clickable:focus-visible,
+.ana2-bar.is-clickable:focus-visible,
+.ana2-dbar.is-clickable:focus-visible,
+.ana2-series__pill:focus-visible,
+.ana2-filters__reset:focus-visible,
+.ana2-modal__close:focus-visible,
+.ana2-chip:focus-within {
+  outline: 2px solid var(--gtc-theme-focus-ring);
+  outline-offset: 2px;
+}
+
+.ana2-table tbody tr:focus-visible {
+  outline: 2px solid var(--gtc-theme-focus-ring);
+  outline-offset: -2px;
+}
+
+@container ana2-body (max-width: 880px) {
+  .ana2-grid4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container ana2 (max-width: 640px) {
+  .ana2__inner {
+    padding: var(--gtc-global-size-unit-16);
+    gap: var(--gtc-global-size-unit-16);
+  }
+}
+
+@container ana2-body (max-width: 640px) {
+  .ana2-grid4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ana2-card {
+    padding: var(--gtc-global-size-unit-16);
+  }
+
+  .ana2-toolbar {
+    align-items: stretch;
+  }
+
+  .ana2-tool {
+    min-inline-size: 100%;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ana2-tool > .cubo-select {
+    max-inline-size: none;
+    inline-size: 100%;
+    min-inline-size: 0;
+  }
+
+  .ana2-tool > .cubo-select--lead-cal {
+    min-inline-size: 0;
+  }
+
+  // Сегменты не сжимают подпись: ширина по тексту, ряд прокручивается целиком.
+  .ana2-tool > .cubo-tabs,
+  .ana2__inner > .cubo-tabs {
+    max-inline-size: 100%;
+  }
+
+  .ana2-tool > .cubo-tabs .cubo-tabs__list,
+  .ana2__inner > .cubo-tabs .cubo-tabs__list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+  }
+
+  .ana2-tool > .cubo-tabs .cubo-tabs__tab,
+  .ana2__inner > .cubo-tabs .cubo-tabs__tab {
+    flex: 0 0 auto;
+    min-inline-size: max-content;
+    min-block-size: var(--gtc-global-size-unit-40);
+  }
+
+  .ana2-tool__reset {
+    margin-left: 0;
+    align-self: start;
+    inline-size: var(--gtc-global-size-unit-40);
+    block-size: var(--gtc-global-size-unit-40);
+  }
+
+  .ana2-kpi__name,
+  .ana2-kpi__value,
+  .ana2-kpi__base {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+  }
+
+  .ana2-chart svg { min-block-size: 220px; }
+
+  .ana2-bar__top,
+  .ana2-dbar__top {
+    flex-wrap: wrap;
+  }
+
+  .ana2-bar__name,
+  .ana2-dbar__name {
+    flex-basis: 100%;
+    white-space: normal;
+  }
+
+  .ana2 .cubo-select,
+  .ana2 .cubo-text {
+    --gtc-component-input-size: var(--gtc-global-size-unit-40);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ana2-bar__track i {
+    transition: none;
+  }
+}

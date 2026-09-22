@@ -1,0 +1,154 @@
+// Рамка браузера и общий хром приложения.
+// Вариант «моно»: монохромная служебная обвязка, цвет — только в дельтах.
+
+.screen-frame {
+  margin: 0;
+  border: 1px solid var(--gtc-theme-border-subtle);
+  border-radius: 18px;
+  background: var(--gtc-theme-surface-elevated);
+  box-shadow: 0 20px 48px -28px rgb(16 20 28 / 0.18);
+  overflow: hidden;
+}
+
+.screen-frame__bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--gtc-theme-border-subtle);
+  background: var(--gtc-theme-surface-page);
+}
+
+.screen-frame__dots {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+
+  i {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--gtc-theme-border-default);
+  }
+}
+
+.screen-frame__url {
+  margin: 0 auto;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--gtc-theme-surface-subtle);
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  letter-spacing: var(--gtc-theme-type-caption-2-letter-spacing);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: min(60%, 420px);
+}
+
+.screen-frame__spacer {
+  width: 43px;
+  flex: 0 0 auto;
+}
+
+.screen-frame__body {
+  background: var(--gtc-theme-surface-elevated);
+  container-type: inline-size;
+}
+
+// Внутренний хром приложения (общий для продуктовых экранов)
+.scr-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 50px;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--gtc-theme-border-subtle);
+}
+
+.scr-chrome__mark {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  background: var(--gtc-theme-static-black);
+}
+
+.scr-chrome__app {
+  font-size: var(--gtc-theme-type-body-2-font-size);
+  line-height: var(--gtc-theme-type-body-2-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  color: var(--gtc-theme-text-default);
+  white-space: nowrap;
+}
+
+.scr-chrome__section {
+  padding-left: 10px;
+  border-left: 1px solid var(--gtc-theme-border-subtle);
+  color: var(--gtc-theme-text-muted);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  white-space: nowrap;
+}
+
+.scr-chrome__nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+// Навигация декоративная: курсор обычный, реакции на наведение нет.
+.scr-chrome__nav-item {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  color: var(--gtc-theme-text-muted);
+  white-space: nowrap;
+  cursor: default;
+
+  &.is-active {
+    background: var(--gtc-theme-surface-subtle);
+    color: var(--gtc-theme-text-default);
+    font-weight: var(--gtc-global-typography-font-weight-semibold);
+  }
+}
+
+.scr-chrome__avatar {
+  margin-left: auto;
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--gtc-theme-surface-muted);
+  color: var(--gtc-theme-text-secondary);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: 1;
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+
+  .scr-chrome__nav ~ & {
+    margin-left: 10px;
+  }
+}
+
+@container (max-width: 760px) {
+  .scr-chrome__nav {
+    display: none;
+  }
+
+  .scr-chrome__section {
+    display: none;
+  }
+
+  .scr-chrome__avatar {
+    margin-left: auto;
+  }
+}

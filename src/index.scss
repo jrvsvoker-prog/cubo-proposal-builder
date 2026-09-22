@@ -1,0 +1,18 @@
+// Токены первыми: base.scss переопределяет часть --gtc-component-* (радиусы КП),
+// при обратном порядке оверрайды проигрывают дефолтам токенов.
+@use 'styles/gtc-tokens';
+@use 'styles/base';
+@use 'styles/client-theme';
+@use 'app/index';
+@use 'app/estimate';
+@use 'components/shared';
+@use 'components/client-brand';
+@use 'components/analytics-view';
+@use 'components/client-portal';
+@use 'components/dash-board-v3';
+@use 'components/data-views';
+@use 'components/entity-card';
+@use 'components/medical-board';
+@use 'components/screen-frame';
+@use 'components/screen-sidebar';
+@use 'components/selection-demo';

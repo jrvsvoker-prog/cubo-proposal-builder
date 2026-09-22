@@ -1,0 +1,30 @@
+// Дельта-пилюля — общий примитив КП (дашборд, аналитика, таблицы).
+// Тона усилены (решение 11.09, 02-I): заливка — ступень *-weak (30), а не
+// *-subtle-surface (10), которая сливалась с серой карточкой surface-muted;
+// текст — *-subtle-text. Проверять на белом и на сером фоне.
+// Размеры (кегль/паддинг) экраны уточняют у себя (dash-board-v3).
+.delta-pill {
+  display: inline-block;
+  padding: var(--gtc-global-size-unit-2) var(--gtc-global-size-unit-8);
+  border-radius: var(--gtc-global-radius-6);
+  font-size: var(--gtc-theme-type-caption-2-font-size);
+  line-height: var(--gtc-theme-type-caption-2-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  &.is-up {
+    background: var(--gtc-theme-accent-success-weak);
+    color: var(--gtc-theme-accent-success-subtle-text);
+  }
+
+  &.is-down {
+    background: var(--gtc-theme-accent-danger-weak);
+    color: var(--gtc-theme-accent-danger-subtle-text);
+  }
+
+  &.is-zero {
+    background: var(--gtc-theme-accent-neutral-weak);
+    color: var(--gtc-global-color-gray-70);
+  }
+}

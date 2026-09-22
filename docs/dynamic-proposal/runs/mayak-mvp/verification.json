@@ -1,0 +1,12 @@
+{
+  "summarySHA256": "9a27ed183afd9862f6cb3e42fa2e11c0ccb2878a3d72d24ec869d223bfdc092d",
+  "profileSHA256": "be8317585efec062905421e08830e3e8b9e9d602074ac2ad214e52ef1c31d83f",
+  "htmlSHA256": "2f308e27455724b9b2235b2112083c9c2de5118628790bc26433d45011f9f79e",
+  "manualProfileEdits": 0,
+  "repeatIdentical": true,
+  "oneService": true,
+  "zeroUnits": true,
+  "externalHtmlAssets": [],
+  "fileOpening": "NOT VERIFIED: policy blocks file://",
+  "httpOffline": "Loaded page: reset filters and pipeline switching passed with network disabled"
+}

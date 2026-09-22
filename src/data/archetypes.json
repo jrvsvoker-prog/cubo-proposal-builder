@@ -1,0 +1,59 @@
+{
+  "school": {
+    "id": "school",
+    "label": "Школы, курсы, секции",
+    "fullProposal": true,
+    "metrics": [
+      { "id": "revenue", "name": "Поступления", "type": "money", "n": "cash", "formula": "Все поступившие платежи, включая предоплаты. Не тождественно начислениям за тот же период." },
+      { "id": "fill", "name": "Заполняемость мест", "type": "percent", "n": "occupied", "d": "capacity", "snapshot": true, "formula": "Ученики / доступные места × 100 на конец периода. Итог из общих числителей и знаменателей." },
+      { "id": "debt", "name": "Доля задолженности", "type": "percent", "n": "debt", "d": "billed", "snapshot": true, "debt": true, "formula": "Непогашенные начисления выбранного периода / все начисления этого периода × 100 на его конец. Меньше — лучше. Поступления могут относиться к другим периодам." },
+      { "id": "average", "name": "Средний платёж", "type": "money", "n": "cash", "d": "orders", "formula": "Поступления / число платежей. Рост среднего платежа сам по себе не означает улучшение." },
+      { "id": "orders", "name": "Платежи", "type": "count", "n": "orders", "formula": "Число успешно проведённых платежей за период." },
+      { "id": "students", "name": "Ученики", "type": "count", "n": "occupied", "snapshot": true, "formula": "Ученики на конец периода. Ученик закреплён за одним филиалом. Сумма филиалов допустима, сумма месяцев — нет." }
+    ],
+    "defaultMetrics": ["revenue", "fill", "debt", "average"],
+    "scales": ["month", "academic"],
+    "stages": ["Новая", "Пробный день", "Договор", "Оплачено"],
+    "seasonality": { "6": 0.9, "7": 0.55, "8": 0.7, "9": 1.15 },
+    "analyticsPeriod": { "yearMonths": 10, "startMonth": 8 },
+    "payments": { "prepayShare": 0.05, "debtDeducted": false }
+  },
+  "service": {
+    "id": "service",
+    "label": "Сервис, ремонт, ателье",
+    "fullProposal": true,
+    "metrics": [
+      { "id": "revenue", "name": "Выручка", "type": "money", "n": "cash", "formula": "Выручка по закрытым за выбранный период заказам." },
+      { "id": "orders", "name": "Выполненные заказы", "type": "count", "n": "orders", "formula": "Число закрытых заказов; каждый учитывается один раз." },
+      { "id": "ontime", "name": "Выполнено в срок", "type": "percent", "n": "ontime", "d": "due", "formula": "Выполненные вовремя / все заказы со сроком в этом периоде × 100. Просроченные незакрытые входят в знаменатель." },
+      { "id": "load", "name": "Загрузка команды", "type": "percent", "n": "hours", "d": "available", "formula": "Оплачиваемые часы / доступные рабочие часы × 100. Демо-коридор 70–85%; рост не всегда улучшение." },
+      { "id": "average", "name": "Средний заказ", "type": "money", "n": "cash", "d": "orders", "formula": "Сумма сумм / сумма количества. Итог взвешен, не среднее карточек." },
+      { "id": "repeat", "name": "Повторные обращения", "type": "percent", "n": "repeat", "d": "eligible", "debt": true, "formula": "Заказы с повтором по той же неисправности за 7 дней / закрытые заказы с полным 7-дневным окном наблюдения × 100. Меньше — лучше." }
+    ],
+    "defaultMetrics": ["revenue", "orders", "ontime", "load"],
+    "scales": ["week", "month", "year"],
+    "stages": ["Заявка", "Диагностика", "В работе", "Готово"],
+    "seasonality": {},
+    "analyticsPeriod": { "yearMonths": 12, "startMonth": 0 },
+    "payments": { "prepayShare": 0, "debtDeducted": true }
+  },
+  "retail": {
+    "id": "retail",
+    "label": "Магазины, точки продаж",
+    "fullProposal": false,
+    "metrics": [
+      { "id": "revenue", "name": "Продажи", "type": "money", "n": "cash", "formula": "Сумма за выбранный период." },
+      { "id": "average", "name": "Средний чек", "type": "money", "n": "cash", "d": "orders", "formula": "Сумма сумм / сумма количества. Итог взвешен, не среднее карточек." },
+      { "id": "conversion", "name": "Конверсия в покупку", "type": "percent", "n": "orders", "d": "visits", "formula": "Чеки / визиты × 100. Итог из общих сумм." },
+      { "id": "returns", "name": "Доля возвратов", "type": "percent", "n": "returned", "d": "sold", "debt": true, "formula": "Возвращённые единицы / проданные единицы выбранного периода × 100. Одинаковое окно наблюдения 7 дней. Меньше — лучше." },
+      { "id": "orders", "name": "Чеки", "type": "count", "n": "orders", "formula": "Чеки продажи, без чеков возврата." },
+      { "id": "basket", "name": "Товаров в чеке", "type": "decimal", "n": "sold", "d": "orders", "formula": "Проданные единицы / чеки." }
+    ],
+    "defaultMetrics": ["revenue", "average", "conversion", "returns"],
+    "scales": ["day", "week", "month", "year"],
+    "stages": ["Заказ", "Собран", "Выдан", "Закрыт"],
+    "seasonality": { "11": 1.1, "12": 1.3, "1": 0.85 },
+    "analyticsPeriod": null,
+    "payments": { "prepayShare": 0, "debtDeducted": true }
+  }
+}

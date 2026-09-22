@@ -1,0 +1,27 @@
+// Квадратный слот клиентского маркера. Размер и радиус задаёт хозяин.
+.client-brand {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  line-height: 1;
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center;
+    pointer-events: none;
+  }
+}
+
+.client-brand--letter {
+  color: inherit;
+}
+
+.client-brand--logo {
+  background: transparent;
+}

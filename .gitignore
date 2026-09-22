@@ -1,0 +1,17 @@
+node_modules
+dist/
+dist-snapshots/
+
+# Локальные материалы клиентских запусков (вводные, research, логотипы)
+client-materials/
+docs/dynamic-proposal/runs/*
+!docs/dynamic-proposal/runs/mehanika/
+!docs/dynamic-proposal/runs/mayak-mvp/
+
+# Сгенерированные клиентские профили; демо-примеры остаются
+src/data/profiles/*.json
+!src/data/profiles/school.json
+!src/data/profiles/service.json
+!src/data/profiles/mehanika.json
+!src/data/profiles/kontur.json
+!src/data/profiles/mayak-mvp.json

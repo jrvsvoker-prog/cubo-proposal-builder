@@ -1,0 +1,165 @@
+@use 'control-context' as ctl;
+
+:root {
+  color: var(--gtc-theme-text-default);
+  background: var(--gtc-theme-surface-page);
+  font-family: var(--gtc-global-typography-font-family-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  @include ctl.on-page;
+
+  // Скругления КП: контролы (поля, селекты, кнопки, табы) — radius-8,
+  // панели меню — 12. Панель селекта телепортируется в body,
+  // поэтому токены — на корне.
+  --gtc-component-input-radius: var(--gtc-global-radius-8);
+  --gtc-component-button-radius-rounded: var(--gtc-global-radius-8);
+  --gtc-component-popup-radius: var(--gtc-global-radius-12);
+}
+
+// Контрол КП читает контекст поверхности (_control-context.scss): на белом — серая заливка
+// без рамки, на серой карточке — белая с рамкой (правило 11.09, 04-B). r8 и 32px — из токенов,
+// фокус/open (primary + ring) — состояния кита.
+.cubo-select {
+  --cubo-select-bg: var(--kp-control-bg);
+  --cubo-select-border: var(--kp-control-border);
+}
+
+.cubo-select:not([data-disabled]):not([data-readonly]):not([data-open]) .cubo-select__trigger:hover {
+  --cubo-select-bg: var(--kp-control-bg-hover);
+  --cubo-select-border: var(--kp-control-border-hover);
+}
+
+.cubo-text {
+  --cubo-text-bg: var(--kp-control-bg);
+  --cubo-text-border: var(--kp-control-border);
+}
+
+.cubo-text:hover:not([data-disabled]):not([data-readonly]):not(:focus-within) {
+  --cubo-text-bg: var(--kp-control-bg-hover);
+  --cubo-text-border: var(--kp-control-border-hover);
+}
+
+// Мультиселект в триггере: имя первого выбранного — обычный текст триггера,
+// счётчик скрытых «+N» — нейтральная пилюля-тег (иначе серый «+2» читается как опечатка).
+.cubo-select__tag {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+.cubo-select__more {
+  display: inline-flex;
+  align-items: center;
+  block-size: var(--gtc-global-size-unit-20);
+  margin-inline-start: var(--gtc-global-size-unit-2);
+  padding-inline: var(--gtc-global-size-unit-6);
+  border-radius: var(--gtc-global-radius-full);
+  background: var(--kp-control-tag-bg);
+  color: var(--c-color-text-secondary);
+  font-size: var(--gtc-theme-type-caption-1-font-size);
+  line-height: var(--gtc-theme-type-caption-1-line-height);
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.cubo-select__chevron {
+  inline-size: 14px;
+  block-size: 14px;
+  background: var(--gtc-theme-text-muted);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8 9l4 -4l4 4'/%3E%3Cpath d='M16 15l-4 4l-4 -4'/%3E%3C/svg%3E") center / contain no-repeat;
+  > * { display: none; }
+}
+
+// Панель селекта идёт по --c-radius-md, а не по popup-radius — выравниваем.
+// Скин по референсу boardui: тонкая граница, мягкая тень, воздушные пункты
+// с серым инсетом у выбранного и чеком справа; ширина — по контенту (у кита
+// панель уже inline-size: max-content).
+.cubo-select__panel,
+.cubo-select__variants {
+  border-radius: var(--gtc-component-popup-radius);
+}
+
+.cubo-select__panel {
+  border-color: var(--gtc-theme-border-subtle);
+  box-shadow: var(--gtc-global-effects-shadow-30);
+}
+
+.cubo-select__list {
+  gap: var(--gtc-global-size-unit-2);
+  padding: var(--gtc-global-size-unit-6);
+}
+
+.cubo-select__option {
+  padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+  border-radius: var(--gtc-global-radius-8);
+}
+
+// Одиночный селект: чек у выбранного не показываем (решение 11.09, 02-D) —
+// отметка только подложкой bg-muted (даёт кит) и весом текста. aria-selected остаётся.
+.cubo-select__variants:not([data-multiple]) .cubo-select__option-check {
+  display: none;
+}
+
+.cubo-select__variants:not([data-multiple]) .cubo-select__option[data-selected] {
+  font-weight: var(--gtc-global-typography-font-weight-semibold);
+}
+
+// Мультиселект: чекбокс слева у всех пунктов, как у «Выбрать все» (02-G).
+// Кит при checkPosition=right рисует его последним — переставляем flex-порядком.
+.cubo-select__variants[data-multiple] .cubo-select__option-check {
+  order: -1;
+  inline-size: auto;
+  min-inline-size: 0;
+}
+
+.cubo-select__selectall {
+  padding: var(--gtc-global-size-unit-10) var(--gtc-global-size-unit-12);
+}
+
+// Табы разделов (format="pill", 02/03/04): активный — коробочка r8 с ровными
+// полями, фон статичный через aria-selected; скользящий индикатор кита скрыт
+// (уходит анимация и дрейф на +3px при промежуточной раскладке). Зазор 4.
+.cubo-tabs[data-format='pill'] {
+  .cubo-tabs__list {
+    --cubo-tabs-radius: var(--gtc-global-radius-8);
+    --cubo-tabs-track-gap: var(--gtc-global-size-unit-4);
+  }
+
+  .cubo-tabs__indicator {
+    display: none;
+  }
+
+  .cubo-tabs__tab[aria-selected='true'] {
+    background-color: var(--cubo-tabs-active-surface);
+  }
+}
+
+// Сегментные табы (data-format=segmented): внешний трек — тем же радиусом,
+// что и соседние селекты/поля (input-radius = r8 в этом прототипе). Кит даёт
+// треку plate + inset (8 + 4 = 12) — трек выглядел круглее контроллов справа
+// (Обзор и Аналитика). Плашка активного сегмента остаётся r8.
+.cubo-tabs[data-format='segmented'] {
+  .cubo-tabs__list {
+    border-radius: var(--gtc-component-input-radius);
+  }
+}
+
+// Иконка-префикс в триггере (календарь у периодных селектов), как в референсе.
+.cubo-select--lead-cal .cubo-select__trigger::before {
+  content: '';
+  inline-size: 15px;
+  block-size: 15px;
+  flex: 0 0 auto;
+  background: var(--gtc-theme-text-muted);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z'/%3E%3Cpath d='M16 3v4'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M4 11h16'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #app { width: 100%; min-height: 100%; margin: 0; }
+
+button, input { font: inherit; }
+
+button { color: inherit; }
