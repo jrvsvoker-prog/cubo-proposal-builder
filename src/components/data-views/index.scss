@@ -497,7 +497,7 @@
   }
 
   &.dv__table--units .cubo-table__grid {
-    min-inline-size: 816px;
+    min-inline-size: 884px;
   }
 
   // Ячейки плотнее по горизонтали (кит: 12px); действие над записью не выводится.
@@ -508,7 +508,8 @@
   // Текстовые колонки: имя и направление держат свой максимум без роста, весь запас
   // ширины уходит «Следующему шагу», который к тому же переносится на две строки.
   // «Стадия» — фикс под самый длинный тег («Готов к выдаче») без переносов.
-  // С филиалом: фикс. 80+148+88+92 = 408 + минимумы 128+140+140 = 408 → 816.
+  // Подразделение не уже шапки: 80px сжирало «Подразделение» и оно наезжало на «Стадию».
+  // С филиалом: 148+148+88+92 = 476 + минимумы 128+140+140 = 408 → 884.
   // Без филиала: 736px. Освободившаяся ширина остаётся у «Следующего шага».
   .column-child {
     flex: 0 1 128px;
@@ -518,6 +519,11 @@
   .column-direction {
     flex: 0 1 140px;
     min-inline-size: 140px;
+  }
+
+  .column-branch {
+    flex: 0 0 148px;
+    min-inline-size: 148px;
   }
 
   .column-next {
@@ -542,6 +548,8 @@
   }
 
   .cubo-table__cell--head {
+    overflow: hidden;
+    white-space: nowrap;
     font-size: var(--gtc-theme-type-caption-1-font-size);
     line-height: var(--gtc-theme-type-caption-1-line-height);
     font-weight: var(--gtc-global-typography-font-weight-medium);

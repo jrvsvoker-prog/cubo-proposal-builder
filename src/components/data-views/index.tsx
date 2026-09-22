@@ -256,7 +256,7 @@ export default defineComponent({
         bodyCell: (row: Lead) => <span class="dv-tbl__ell" title={row.direction}>{row.direction}</span>,
       },
       ...(profile.units.length ? [{
-        key: 'branch', label: profile.unitSingular, width: '80px',
+        key: 'branch', label: profile.unitSingular,
         bodyCell: (row: Lead) => <span class="dv-tbl__ell dv-tbl__muted" title={row.branch}>{row.branch}</span>,
       }] : []),
       {
