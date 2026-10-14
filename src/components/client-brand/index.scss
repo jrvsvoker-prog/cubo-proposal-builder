@@ -2,6 +2,10 @@
 .client-brand {
   display: grid;
   place-items: center;
+  // Неявная auto-строка растёт до высоты PNG/SVG и обрезается слотом.
+  // Явная строка удерживает изображение в размерах, заданных хозяином.
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
   width: 100%;
   height: 100%;
   overflow: hidden;

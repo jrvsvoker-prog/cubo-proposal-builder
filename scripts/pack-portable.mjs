@@ -45,6 +45,7 @@ const INCLUDE = [
   'scripts/profile-draft.mjs',
   'scripts/test-proposal.mjs',
   'scripts/test-profile-draft.mjs',
+  'scripts/test-logo-layout.mjs',
   'scripts/pack-portable.mjs',
   'docs/context.md',
   'docs/dynamic-proposal/agent-runbook.md',
